@@ -59,7 +59,7 @@ export async function updateNytSolveData(user: User, startDate: Date, endDate: D
   const idToken = await user.getIdToken(true)
   const startDateFormatted = format(startDate, "yyyy-MM-dd")
   const endDateFormatted = format(endDate, "yyyy-MM-dd")
-  return await axios.put(`http://localhost:8080/api/nyt?startDate=${startDateFormatted}&endDate=${endDateFormatted}`, null, {
+  return await axios.post(`http://localhost:8080/nyt?dateStart=${startDateFormatted}&dateEnd=${endDateFormatted}`, null, {
     headers: {
       Authorization: "bearer " + idToken
     }

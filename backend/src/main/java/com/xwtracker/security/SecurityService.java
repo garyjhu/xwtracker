@@ -9,7 +9,7 @@ public class SecurityService {
     public String getBearerToken(HttpServletRequest request) {
         String bearerToken = null;
         String authorization = request.getHeader("Authorization");
-        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
+        if (StringUtils.hasText(authorization) && authorization.startsWith("bearer ")) {
             bearerToken = authorization.substring(7);
         }
         return bearerToken;

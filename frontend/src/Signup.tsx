@@ -1,8 +1,5 @@
-import { SubmitHandler, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { Button, PasswordInput, TextInput } from "@mantine/core"
-import { auth } from "./firebase-config"
-import axios from "axios"
-import { createUserWithEmailAndPassword } from "firebase/auth"
 import { Navigate, useNavigate } from "react-router-dom"
 import { useContext } from "react";
 import { AuthContext } from "./AuthProvider";
@@ -26,7 +23,7 @@ function Signup() {
   const onSubmit = async (data: SignupFormValues) => {
     try {
       await createUser(data.email, data.password)
-      navigate("/")
+      navigate("/profile")
     }
     catch (error) {
       console.log("error")

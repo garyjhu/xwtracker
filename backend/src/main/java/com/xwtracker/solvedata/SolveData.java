@@ -1,5 +1,6 @@
 package com.xwtracker.solvedata;
 
+import com.xwtracker.puzzle.Puzzle;
 import com.xwtracker.puzzletrackeruser.PuzzleTrackerUser;
 import jakarta.persistence.*;
 
@@ -8,13 +9,17 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
+@Table(indexes = {@Index(columnList = "solver_uid, puzzle_id", unique = true)})
 public class SolveData {
     @Id
     @GeneratedValue
     private Long id;
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "solver_uid", nullable = false)
     private PuzzleTrackerUser solver;
+    @ManyToOne
+    @JoinColumn(name = "puzzle_id", nullable = false)
+    private Puzzle puzzle;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Cell> cells = new ArrayList<>();
     private Integer secondsSpentSolving;
@@ -26,6 +31,14 @@ public class SolveData {
 
     public void setSolver(PuzzleTrackerUser solver) {
         this.solver = solver;
+    }
+
+    public Puzzle getPuzzle() {
+        return puzzle;
+    }
+
+    public void setPuzzle(Puzzle puzzle) {
+        this.puzzle = puzzle;
     }
 
     public List<? extends Cell> getCells() {

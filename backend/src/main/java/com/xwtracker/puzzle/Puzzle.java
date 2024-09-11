@@ -10,10 +10,12 @@ import java.util.HashSet;
 import java.util.List;
 
 @Entity
+@Table(indexes = {@Index(columnList = "nytPuzzleId")})
 public class Puzzle {
     @Id
     @GeneratedValue
     private Long id;
+    private Long nytPuzzleId;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Cell> cells = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL)
@@ -21,6 +23,14 @@ public class Puzzle {
     private Integer height;
     private Integer width;
     private String constructors;
+
+    public Long getNytPuzzleId() {
+        return nytPuzzleId;
+    }
+
+    public void setNytPuzzleId(Long nytPuzzleId) {
+        this.nytPuzzleId = nytPuzzleId;
+    }
 
     public List<Cell> getCells() {
         return cells;

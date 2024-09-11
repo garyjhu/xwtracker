@@ -10,3 +10,15 @@ spring:
         jwt:
           issuer-uri: "https://securetoken.google.com/xwtracker"
           jwk-set-uri: "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com"
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+        orm:
+          jdbc:
+            bind: TRACE
