@@ -1,7 +1,6 @@
 package com.xwtracker.puzzle;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -10,12 +9,13 @@ import java.util.HashSet;
 import java.util.List;
 
 @Entity
-@Table(indexes = {@Index(columnList = "nytPuzzleId")})
+@Table(indexes = {@Index(columnList = "nyt_id")})
 public class Puzzle {
     @Id
     @GeneratedValue
     private Long id;
-    private Long nytPuzzleId;
+    @Column(name = "nyt_id")
+    private Long nytId;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Cell> cells = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL)
@@ -24,12 +24,12 @@ public class Puzzle {
     private Integer width;
     private String constructors;
 
-    public Long getNytPuzzleId() {
-        return nytPuzzleId;
+    public Long getNytId() {
+        return nytId;
     }
 
-    public void setNytPuzzleId(Long nytPuzzleId) {
-        this.nytPuzzleId = nytPuzzleId;
+    public void setNytId(Long nytId) {
+        this.nytId = nytId;
     }
 
     public List<Cell> getCells() {

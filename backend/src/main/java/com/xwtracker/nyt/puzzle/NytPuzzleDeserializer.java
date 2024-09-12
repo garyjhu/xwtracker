@@ -23,7 +23,7 @@ public class NytPuzzleDeserializer extends StdDeserializer<NytPuzzle> {
         JsonNode node = jp.readValueAsTree();
         NytPuzzle nytPuzzle = new NytPuzzle();
         deserializeBody(node.get("body").get(0), jp.getCodec(), nytPuzzle);
-        nytPuzzle.setNytPuzzleId(node.get("id").asLong());
+        nytPuzzle.setNytId(node.get("id").asLong());
         nytPuzzle.setConstructors(node.get("constructors").get(0).asText());
         nytPuzzle.setEditor(node.get("editor").asText());
         nytPuzzle.setPublicationDate(node.get("publicationDate").asText());

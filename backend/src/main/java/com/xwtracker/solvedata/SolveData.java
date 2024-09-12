@@ -1,5 +1,6 @@
 package com.xwtracker.solvedata;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xwtracker.puzzle.Puzzle;
 import com.xwtracker.puzzletrackeruser.PuzzleTrackerUser;
 import jakarta.persistence.*;
@@ -9,16 +10,20 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(indexes = {@Index(columnList = "solver_uid, puzzle_id", unique = true)})
+@Table(indexes = {@Index(columnList = "solver_uid, puzzle_nyt_id", unique = true)})
 public class SolveData {
     @Id
     @GeneratedValue
     private Long id;
     @ManyToOne
     @JoinColumn(name = "solver_uid", nullable = false)
+    @JsonIgnore
     private PuzzleTrackerUser solver;
     @ManyToOne
-    @JoinColumn(name = "puzzle_id", nullable = false)
+    @JoinColumns({
+        @JoinColumn(name = "puzzle_id", referencedColumnName = "id"),
+        @JoinColumn(name = "puzzle_nyt_id", referencedColumnName = "nyt_id")
+    })
     private Puzzle puzzle;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Cell> cells = new ArrayList<>();
