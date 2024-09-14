@@ -6,11 +6,14 @@ export interface SolveData {
   cells: SolveDataCell[],
   height: number,
   width: number,
-  secondsSpentSolving: number,
+  time: number,
   checks: number,
   reveals: number,
-  timeOfSolve: Date,
+  date: Date,
   group: string
+  puzzle: {
+    svg: string
+  }
 }
 
 export interface SolveDataCell {
@@ -39,6 +42,15 @@ export interface AuthContextValues {
 }
 
 export interface GetSolveDataListResponse {
-  solveDataList: SolveData[],
-  numberOfPages: number
+  content: SolveData[],
+  last: boolean,
+  totalPages: number,
+  totalElements: number,
+  first: boolean,
+  size: number,
+  "number": number
 }
+
+export type SortName = "date" | "time"
+
+export type SortDirection = "asc" | "desc"

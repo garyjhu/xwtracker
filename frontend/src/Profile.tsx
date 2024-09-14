@@ -31,14 +31,14 @@ export default function Profile() {
         "Content-Type": "application/json"
       }
     })
-    const firstNytPublishDate = new Date(2023, 10, 21)
+    const firstNytPublishDate = new Date()
     let endDate = new Date()
     while (endDate >= firstNytPublishDate) {
       let startDate = startOfMonth(endDate)
       mutation.mutate({ startDate, endDate })
       endDate = addDays(startDate, -1)
     }
-    // navigate("/")
+    navigate("/")
   }
 
   return (

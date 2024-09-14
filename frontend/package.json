@@ -19,6 +19,7 @@
     "chartjs-adapter-date-fns": "^3.0.0",
     "date-fns": "^3.6.0",
     "firebase": "^10.11.1",
+    "html-react-parser": "^5.1.16",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
@@ -27,6 +28,7 @@
     "react-router-typesafe": "^1.5.0"
   },
   "devDependencies": {
+    "@types/css-modules": "^1.0.5",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
     "@typescript-eslint/eslint-plugin": "^7.8.0",

@@ -24,7 +24,7 @@ public class NytSolveDataDeserializer extends StdDeserializer<NytSolveData> {
         JsonNode node = jp.readValueAsTree();
         deserializeCells(node.get("board").get("cells"), jp.getCodec(), nytSolveData);
         deserializeCalcs(node.get("calcs"), nytSolveData);
-        nytSolveData.setTimeOfSolve(new Date(TimeUnit.SECONDS.toMillis(node.get("lastSolve").asLong())));
+        nytSolveData.setDate(new Date(TimeUnit.SECONDS.toMillis(node.get("lastSolve").asLong())));
         return nytSolveData;
     }
 
@@ -37,7 +37,7 @@ public class NytSolveDataDeserializer extends StdDeserializer<NytSolveData> {
     }
 
     private void deserializeCalcs(JsonNode calcsNode, NytSolveData nytSolveData) {
-        nytSolveData.setSecondsSpentSolving(calcsNode.get("secondsSpentSolving").asInt());
+        nytSolveData.setTime(calcsNode.get("secondsSpentSolving").asInt());
         nytSolveData.setSolved(calcsNode.get("solved").asBoolean());
     }
 }

@@ -23,14 +23,15 @@ public class NytPuzzleDeserializer extends StdDeserializer<NytPuzzle> {
         JsonNode node = jp.readValueAsTree();
         NytPuzzle nytPuzzle = new NytPuzzle();
         deserializeBody(node.get("body").get(0), jp.getCodec(), nytPuzzle);
-        nytPuzzle.setNytId(node.get("id").asLong());
         nytPuzzle.setConstructors(node.get("constructors").get(0).asText());
         nytPuzzle.setEditor(node.get("editor").asText());
+        nytPuzzle.setNytId(node.get("id").asLong());
         nytPuzzle.setPublicationDate(node.get("publicationDate").asText());
         return nytPuzzle;
     }
 
     private void deserializeBody(JsonNode bodyNode, ObjectCodec codec, NytPuzzle nytPuzzle) throws IOException {
+        nytPuzzle.setSvg(bodyNode.get("board").asText());
         deserializeCells(bodyNode.get("cells"), codec, nytPuzzle);
         for (JsonNode clueNode : bodyNode.get("clues")) {
             deserializeClue(clueNode, nytPuzzle);

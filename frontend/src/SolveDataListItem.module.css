@@ -1,0 +1,12 @@
+.button {
+    height: 10rem;
+}
+
+.flex {
+    height: 100%;
+}
+
+.box {
+    aspect-ratio: 1;
+    height: 100%;
+}

@@ -27,8 +27,8 @@ public class SolveData {
     private Puzzle puzzle;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Cell> cells = new ArrayList<>();
-    private Integer secondsSpentSolving;
-    private Date timeOfSolve;
+    private Integer time;
+    private Date date;
 
     public PuzzleTrackerUser getSolver() {
         return solver;
@@ -55,20 +55,20 @@ public class SolveData {
         this.cells = (List<Cell>) cells;
     }
 
-    public Integer getSecondsSpentSolving() {
-        return secondsSpentSolving;
+    public Integer getTime() {
+        return time;
     }
 
-    public void setSecondsSpentSolving(Integer secondsSpentSolving) {
-        this.secondsSpentSolving = secondsSpentSolving;
+    public void setTime(Integer time) {
+        this.time = time;
     }
 
-    public Date getTimeOfSolve() {
-        return timeOfSolve;
+    public Date getDate() {
+        return date;
     }
 
-    public void setTimeOfSolve(Date timeOfSolve) {
-        this.timeOfSolve = timeOfSolve;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     @Entity

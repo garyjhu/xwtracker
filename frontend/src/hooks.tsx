@@ -1,6 +1,8 @@
-import { useOutletContext } from "react-router-dom";
-import { User } from "firebase/auth";
+import { useContext } from "react";
+import { AuthContext } from "./AuthProvider";
 
-export function useUser() {
-  return useOutletContext<User>()
+export function useAuthenticatedUser() {
+  const { user } = useContext(AuthContext)
+  if (!user) throw new Error("Invalid state")
+  return user
 }
