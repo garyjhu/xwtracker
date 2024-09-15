@@ -13,12 +13,12 @@ export interface DashboardState {
 
 export default function Dashboard() {
   const [state, setState] = useState<DashboardState>({
-    page: 0,
+    page: 1,
     pageSize: 10
   })
   const user = useAuthenticatedUser()
 
-  const { isPending, isError, data, error, fetchStatus } = useQuery(getSolveDataListOptions(user, state.page, state.pageSize))
+  const { isPending, isError, data, error, fetchStatus } = useQuery(getSolveDataListOptions(user, state.page - 1, state.pageSize))
 
   if (isPending) {
     return <span>Loading... {fetchStatus}</span>
@@ -33,7 +33,7 @@ export default function Dashboard() {
       <Stack>
         {content.map((solveData) => <SolveDataListItem solveData={solveData} key={solveData.id} />)}
       </Stack>
-      <Pagination total={totalPages} onChange={(page) => setState({...state, page})} />
+      <Pagination total={totalPages} value={state.page} onChange={(page) => setState({...state, page})} />
     </>
   )
 }

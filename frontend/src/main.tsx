@@ -44,7 +44,13 @@ const router = createBrowserRouter([
   },
 ])
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: Infinity
+    }
+  }
+})
 
 const theme = createTheme({
   autoContrast: true,

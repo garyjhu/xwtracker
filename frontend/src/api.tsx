@@ -20,14 +20,14 @@ export function getSolveDataOptions(user: User, id: number) {
 
 export function getSolveDataListOptions(
     user: User,
-    page: number,
+    pageIndex: number,
     pageSize: number,
     sortName: SortName = "date",
     sortDir: SortDirection = "desc"
 ) {
   return queryOptions({
-    queryKey: ["getSolveDataList", user.uid, page, pageSize, sortName, sortDir],
-    queryFn: () => getSolveDataList(user, page, pageSize, sortName, sortDir)
+    queryKey: ["getSolveDataList", user.uid, pageIndex, pageSize, sortName, sortDir],
+    queryFn: () => getSolveDataList(user, pageIndex, pageSize, sortName, sortDir)
   })
 }
 
@@ -53,12 +53,12 @@ export async function getSolveData(user: User, id: number) {
 
 export async function getSolveDataList(
     user: User,
-    page: number,
+    pageIndex: number,
     pageSize: number,
     sortName: SortName,
     sortDir: SortDirection) {
   const idToken = await user.getIdToken(true)
-  const response = await axios.get<GetSolveDataListResponse>(`http://localhost:8080/api/solvedata?page=${page}&size=${pageSize}&sort=${sortName},${sortDir}`, {
+  const response = await axios.get<GetSolveDataListResponse>(`http://localhost:8080/api/solvedata?page=${pageIndex}&size=${pageSize}&sort=${sortName},${sortDir}`, {
     headers: {
       Authorization: "bearer " + idToken
     }
