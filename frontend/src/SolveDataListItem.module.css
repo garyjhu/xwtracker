@@ -1,12 +1,15 @@
-.button {
-    height: 10rem;
+.box-info {
+    padding: 1rem;
+    text-align: start;
 }
 
-.flex {
-    height: 100%;
-}
-
-.box {
+.box-puzzle {
     aspect-ratio: 1;
     height: 100%;
+    padding: 1rem;
+}
+
+.button {
+    display: flex;
+    height: 10rem;
 }

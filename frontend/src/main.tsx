@@ -2,7 +2,7 @@ import '@mantine/core/styles.css';
 import React from "react"
 import ReactDOM from "react-dom/client"
 import Root from "./Root"
-import { MantineProvider } from "@mantine/core"
+import { createTheme, MantineProvider } from "@mantine/core"
 import { RouterProvider, createBrowserRouter } from "react-router-dom"
 import Login from "./Login"
 import Signup from "./Signup"
@@ -46,9 +46,29 @@ const router = createBrowserRouter([
 
 const queryClient = new QueryClient()
 
+const theme = createTheme({
+  autoContrast: true,
+  primaryColor: "aquamarine",
+  primaryShade: 2,
+  colors: {
+    "aquamarine": [
+      "#e1fff6",
+      "#cbffee",
+      "#9affde",
+      "#64ffcb",
+      "#3bffbb",
+      "#21ffb1",
+      "#09ffac",
+      "#00e396",
+      "#00ca84",
+      "#00ae70"
+    ]
+  }
+})
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <MantineProvider>
+    <MantineProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
       </QueryClientProvider>

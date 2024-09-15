@@ -23,6 +23,7 @@ public class Puzzle {
     private Integer height;
     private Integer width;
     private String constructors;
+    private String title;
 
     public Long getNytId() {
         return nytId;
@@ -70,6 +71,14 @@ public class Puzzle {
 
     public void setConstructors(String constructors) {
         this.constructors = constructors;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     @Entity

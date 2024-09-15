@@ -2,7 +2,6 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, Us
 
 export interface SolveData {
   id: number,
-  title: string,
   cells: SolveDataCell[],
   height: number,
   width: number,
@@ -12,7 +11,9 @@ export interface SolveData {
   date: Date,
   group: string
   puzzle: {
+    nytId?: number
     svg: string
+    title?: string
   }
 }
 
