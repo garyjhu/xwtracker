@@ -8,6 +8,8 @@ import com.xwtracker.puzzle.PuzzleRepository;
 import com.xwtracker.puzzletrackeruser.PuzzleTrackerUser;
 import com.xwtracker.solvedata.SolveData;
 import com.xwtracker.solvedata.SolveDataRepository;
+import com.xwtracker.solvegroup.SolveGroup;
+import com.xwtracker.solvegroup.SolveGroupService;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;
@@ -17,11 +19,18 @@ public class NytArchiveEntryService {
     private final NytService nytService;
     private final PuzzleRepository puzzleRepository;
     private final SolveDataRepository solveDataRepository;
+    private final SolveGroupService solveGroupService;
 
-    public NytArchiveEntryService(NytService nytService, PuzzleRepository puzzleRepository, SolveDataRepository solveDataRepository) {
+    public NytArchiveEntryService(
+        NytService nytService,
+        PuzzleRepository puzzleRepository,
+        SolveDataRepository solveDataRepository,
+        SolveGroupService solveGroupService
+    ) {
         this.nytService = nytService;
         this.puzzleRepository = puzzleRepository;
         this.solveDataRepository = solveDataRepository;
+        this.solveGroupService = solveGroupService;
     }
 
     public CompletableFuture<Void> updateNytPuzzleAndSolveData(NytArchiveEntry archiveEntry, PuzzleTrackerUser user) {
@@ -30,9 +39,12 @@ public class NytArchiveEntryService {
                 if (puzzleRepository.findByNytId(archiveEntry.getPuzzleID()) == null) {
                     nytPuzzle = puzzleRepository.save(nytPuzzle);
                 }
-                if (solveDataRepository.findBySolverAndNytPuzzleId(user.getUid(), archiveEntry.getPuzzleID()) == null) {
-                    nytSolveData.setSolver(user);
+                if (solveDataRepository.findByUserAndNytPuzzleId(user.getUid(), archiveEntry.getPuzzleID()) == null) {
+                    nytSolveData.setUser(user);
                     nytSolveData.setPuzzle(nytPuzzle);
+                    SolveGroup nytSolveGroup = solveGroupService.getNytSolveGroupFromPrintDate(archiveEntry.getPrintDate(), user);
+                    nytSolveData.getGroups().add(nytSolveGroup);
+                    nytSolveData.setDefaultGroup(nytSolveGroup);
                     solveDataRepository.save(nytSolveData);
                 }
             }));
@@ -46,7 +58,7 @@ public class NytArchiveEntryService {
     }
 
     private CompletableFuture<NytSolveData> getNytSolveData(NytArchiveEntry archiveEntry, PuzzleTrackerUser user) {
-        SolveData searchResult = solveDataRepository.findBySolverAndNytPuzzleId(user.getUid(), archiveEntry.getPuzzleID());
+        SolveData searchResult = solveDataRepository.findByUserAndNytPuzzleId(user.getUid(), archiveEntry.getPuzzleID());
         return searchResult == null
             ? nytService.fetchSolveDataFromArchive(archiveEntry.getPuzzleID(), user)
             : CompletableFuture.completedFuture((NytSolveData) searchResult);

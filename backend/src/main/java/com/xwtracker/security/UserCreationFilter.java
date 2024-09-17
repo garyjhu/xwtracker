@@ -2,6 +2,7 @@ package com.xwtracker.security;
 
 import com.xwtracker.puzzletrackeruser.PuzzleTrackerUser;
 import com.xwtracker.puzzletrackeruser.PuzzleTrackerUserRepository;
+import com.xwtracker.solvegroup.SolveGroup;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class UserCreationFilter extends OncePerRequestFilter {
@@ -31,8 +33,15 @@ public class UserCreationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String uid = SecurityContextHolder.getContext().getAuthentication().getName();
         if (userRepository.findById(uid).isEmpty()) {
-            PuzzleTrackerUser user = new PuzzleTrackerUser();
-            user.setUid(uid);
+            PuzzleTrackerUser user = new PuzzleTrackerUser(uid);
+            List<SolveGroup> solveGroups = user.getSolveGroups();
+            solveGroups.add(new SolveGroup("NYT Monday", user));
+            solveGroups.add(new SolveGroup("NYT Tuesday", user));
+            solveGroups.add(new SolveGroup("NYT Wednesday", user));
+            solveGroups.add(new SolveGroup("NYT Thursday", user));
+            solveGroups.add(new SolveGroup("NYT Friday", user));
+            solveGroups.add(new SolveGroup("NYT Saturday", user));
+            solveGroups.add(new SolveGroup("NYT Sunday", user));
             userRepository.save(user);
         }
         filterChain.doFilter(request, response);

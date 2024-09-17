@@ -1,25 +1,27 @@
 package com.xwtracker.puzzletrackeruser;
 
-import com.xwtracker.solvedata.SolveData;
+import com.xwtracker.solvegroup.SolveGroup;
 import jakarta.persistence.*;
 
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class PuzzleTrackerUser {
     @Id
     private String uid;
     private String nytSCookie;
-    @OneToMany(mappedBy = "solver")
-    private Collection<SolveData> solvedPuzzles = new HashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<SolveGroup> solveGroups = new ArrayList<>();
+
+    public PuzzleTrackerUser() {}
+
+    public PuzzleTrackerUser(String uid) {
+        this.uid = uid;
+    }
 
     public String getUid() {
         return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
     }
 
     public String getNytSCookie() {
@@ -30,12 +32,11 @@ public class PuzzleTrackerUser {
         this.nytSCookie = nytSCookie;
     }
 
-    public Collection<SolveData> getSolvedPuzzles() {
-        return solvedPuzzles;
+    public List<SolveGroup> getSolveGroups() {
+        return solveGroups;
     }
 
-    public void setSolvedPuzzles(Collection<SolveData> solvedPuzzles) {
-        this.solvedPuzzles = solvedPuzzles;
+    public void setSolveGroups(List<SolveGroup> solveGroups) {
+        this.solveGroups = solveGroups;
     }
-
 }

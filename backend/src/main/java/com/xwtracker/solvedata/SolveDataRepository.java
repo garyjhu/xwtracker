@@ -9,11 +9,11 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(collectionResourceRel = "solveData", path = "solveData")
 public interface SolveDataRepository extends JpaRepository<SolveData, Long> {
-    SolveData findBySolverAndId(PuzzleTrackerUser solver, Long id);
+    SolveData findByUserAndId(PuzzleTrackerUser user, Long id);
 
     // use native query instead of JPA named query to avoid unnecessary join
-    @Query(value = "SELECT * FROM SOLVE_DATA WHERE SOLVER_UID = ?1 AND PUZZLE_NYT_ID = ?2", nativeQuery = true)
-    SolveData findBySolverAndNytPuzzleId(String uid, Long nytId);
+    @Query(value = "SELECT * FROM SOLVE_DATA WHERE USER_UID = ?1 AND PUZZLE_NYT_ID = ?2", nativeQuery = true)
+    SolveData findByUserAndNytPuzzleId(String uid, Long nytId);
 
-    Page<SolveData> findBySolver(PuzzleTrackerUser solver, Pageable pageable);
+    Page<SolveData> findByUser(PuzzleTrackerUser user, Pageable pageable);
 }

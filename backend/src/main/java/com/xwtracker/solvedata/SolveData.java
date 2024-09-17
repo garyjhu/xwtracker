@@ -1,41 +1,48 @@
 package com.xwtracker.solvedata;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xwtracker.solvegroup.SolveGroup;
 import com.xwtracker.puzzle.Puzzle;
 import com.xwtracker.puzzletrackeruser.PuzzleTrackerUser;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
-@Table(indexes = {@Index(columnList = "solver_uid, puzzle_nyt_id", unique = true)})
+@Table(indexes = {@Index(columnList = "user_uid, puzzle_nyt_id", unique = true)})
 public class SolveData {
     @Id
     @GeneratedValue
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "solver_uid", nullable = false)
+    @JoinColumn(name = "user_uid", nullable = false)
     @JsonIgnore
-    private PuzzleTrackerUser solver;
+    private PuzzleTrackerUser user;
     @ManyToOne
     @JoinColumns({
         @JoinColumn(name = "puzzle_id", referencedColumnName = "id"),
         @JoinColumn(name = "puzzle_nyt_id", referencedColumnName = "nyt_id")
     })
     private Puzzle puzzle;
+    @ManyToMany
+    private Collection<SolveGroup> groups = new HashSet<>();
+    @ManyToOne
+    private SolveGroup defaultGroup;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Cell> cells = new ArrayList<>();
     private Integer time;
     private Date date;
 
-    public PuzzleTrackerUser getSolver() {
-        return solver;
+    public Long getId() {
+        return id;
     }
 
-    public void setSolver(PuzzleTrackerUser solver) {
-        this.solver = solver;
+    public PuzzleTrackerUser getUser() {
+        return user;
+    }
+
+    public void setUser(PuzzleTrackerUser user) {
+        this.user = user;
     }
 
     public Puzzle getPuzzle() {
@@ -44,6 +51,22 @@ public class SolveData {
 
     public void setPuzzle(Puzzle puzzle) {
         this.puzzle = puzzle;
+    }
+
+    public Collection<SolveGroup> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Collection<SolveGroup> groups) {
+        this.groups = groups;
+    }
+
+    public SolveGroup getDefaultGroup() {
+        return defaultGroup;
+    }
+
+    public void setDefaultGroup(SolveGroup defaultGroup) {
+        this.defaultGroup = defaultGroup;
     }
 
     public List<? extends Cell> getCells() {

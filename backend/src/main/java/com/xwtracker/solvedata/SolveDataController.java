@@ -23,15 +23,15 @@ public class SolveDataController {
 
     @GetMapping(value = "/api/solvedata", params = {"id"})
     public ResponseEntity<SolveData> getSolveData(Principal principal, @RequestParam Long id) {
-        PuzzleTrackerUser solver = userRepository.getReferenceById(principal.getName());
-        SolveData solveData = solveDataRepository.findBySolverAndId(solver, id);
+        PuzzleTrackerUser user = userRepository.getReferenceById(principal.getName());
+        SolveData solveData = solveDataRepository.findByUserAndId(user, id);
         return ResponseEntity.ofNullable(solveData);
     }
 
     @GetMapping(value = "/api/solvedata")
     public ResponseEntity<Page<SolveData>> getSolveDataList(Principal principal, Pageable pageable) {
-        PuzzleTrackerUser solver = userRepository.getReferenceById(principal.getName());
-        Page<SolveData> page = solveDataRepository.findBySolver(solver, pageable);
+        PuzzleTrackerUser user = userRepository.getReferenceById(principal.getName());
+        Page<SolveData> page = solveDataRepository.findByUser(user, pageable);
         return ResponseEntity.ok(page);
     }
 }
