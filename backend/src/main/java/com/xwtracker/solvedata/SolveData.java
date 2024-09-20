@@ -9,7 +9,7 @@ import jakarta.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(indexes = {@Index(columnList = "user_uid, puzzle_nyt_id", unique = true)})
+@Table(indexes = {@Index(columnList = "user_uid, puzzle_id", unique = true)})
 public class SolveData {
     @Id
     @GeneratedValue
@@ -19,10 +19,7 @@ public class SolveData {
     @JsonIgnore
     private PuzzleTrackerUser user;
     @ManyToOne
-    @JoinColumns({
-        @JoinColumn(name = "puzzle_id", referencedColumnName = "id"),
-        @JoinColumn(name = "puzzle_nyt_id", referencedColumnName = "nyt_id")
-    })
+    @JoinColumn(name = "puzzle_id", nullable = false)
     private Puzzle puzzle;
     @ManyToMany
     private Collection<SolveGroup> groups = new HashSet<>();
@@ -92,6 +89,10 @@ public class SolveData {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String getTitle() {
+        return puzzle.getTitle();
     }
 
     @Entity

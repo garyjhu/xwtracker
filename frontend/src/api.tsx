@@ -1,20 +1,29 @@
-import { GetSolveDataListResponse, SolveTimesListItem, SortDirection, SortName } from "./types";
+import {
+  GetSolveDataListResponse,
+  SolveData,
+  SolveDataSearchKey,
+  SolveDataSummary,
+  SortDirection,
+  SortName
+} from "./types";
 import { queryOptions } from "@tanstack/react-query";
 import axios from "axios";
 import { User } from "firebase/auth";
 import { format } from "date-fns";
 
-export function getSolveTimesOptions(user: User, group: string) {
+const BASE_URL = "http://localhost:8080"
+
+export function getSolveDataSummaryListOptions(user: User, group: string) {
   return queryOptions({
-    queryKey: ["getSolveTimes", user.uid, group],
-    queryFn: () => getSolveTimes(user, group)
+    queryKey: ["getSolveDataSummaryList", user.uid, group],
+    queryFn: () => getSolveDataSummaryList(user, group)
   })
 }
 
-export function getSolveDataOptions(user: User, id: number) {
+export function getSolveDataOptions(user: User, key: SolveDataSearchKey) {
   return queryOptions({
-    queryKey: ["getSolveData", user.uid, id],
-    queryFn: () => getSolveData(user, id)
+    queryKey: ["getSolveData", user.uid, key],
+    queryFn: () => getSolveData(user, key)
   })
 }
 
@@ -31,9 +40,9 @@ export function getSolveDataListOptions(
   })
 }
 
-export async function getSolveTimes(user: User, group: string) {
+export async function getSolveDataSummaryList(user: User, group: string) {
   const idToken = await user.getIdToken(true)
-  const response = await axios.get<SolveTimesListItem[]>(`http://localhost:8080/api/solvetimes/group=${group}`, {
+  const response = await axios.get<SolveDataSummary[]>(`${BASE_URL}/solvedata?group=${group}`, {
     headers: {
       Authorization: "bearer " + idToken
     }
@@ -41,9 +50,12 @@ export async function getSolveTimes(user: User, group: string) {
   return response.data
 }
 
-export async function getSolveData(user: User, id: number) {
+export async function getSolveData(user: User, key: SolveDataSearchKey) {
   const idToken = await user.getIdToken(true)
-  const response = await axios.get<SolveTimesListItem[]>(`http://localhost:8080/api/solvedata/id=${id}`, {
+  const url = key.solveDataId
+    ? `${BASE_URL}/solvedata?id=${key.solveDataId}`
+    : `${BASE_URL}/nyt/solvedata?print_date=${key.nytPrintDate}`
+  const response = await axios.get<SolveData>(url, {
     headers: {
       Authorization: "bearer " + idToken
     }
@@ -58,7 +70,7 @@ export async function getSolveDataList(
     sortName: SortName,
     sortDir: SortDirection) {
   const idToken = await user.getIdToken(true)
-  const response = await axios.get<GetSolveDataListResponse>(`http://localhost:8080/api/solvedata?page=${pageIndex}&size=${pageSize}&sort=${sortName},${sortDir}`, {
+  const response = await axios.get<GetSolveDataListResponse>(`${BASE_URL}/solvedata?page=${pageIndex}&size=${pageSize}&sort=${sortName},${sortDir}`, {
     headers: {
       Authorization: "bearer " + idToken
     }

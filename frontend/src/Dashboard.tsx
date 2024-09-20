@@ -1,10 +1,10 @@
-import { Button, Group, Pagination, Stack } from "@mantine/core";
+import { Pagination, Stack } from "@mantine/core";
 import SolveDataListItem from "./SolveDataListItem";
-import { useContext, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSolveDataListOptions } from "./api";
-import { AuthContext } from "./AuthProvider";
 import { useAuthenticatedUser } from "./hooks";
+import { isNyt } from "./predicates";
 
 export interface DashboardState {
   page: number,
@@ -18,7 +18,19 @@ export default function Dashboard() {
   })
   const user = useAuthenticatedUser()
 
+  const queryClient = useQueryClient()
   const { isPending, isError, data, error, fetchStatus } = useQuery(getSolveDataListOptions(user, state.page - 1, state.pageSize))
+
+  useEffect(() => {
+    if (data) {
+      for (let solveData of data.content) {
+        queryClient.setQueryData(["getSolveData", user.uid, { solveDataId: solveData.id }], solveData)
+        if (isNyt(solveData.puzzle)) {
+          queryClient.setQueryData(["getSolveData", user.uid, { nytPrintDate: solveData.puzzle.nytPrintDate }], solveData)
+        }
+      }
+    }
+  }, [data, queryClient, user])
 
   if (isPending) {
     return <span>Loading... {fetchStatus}</span>

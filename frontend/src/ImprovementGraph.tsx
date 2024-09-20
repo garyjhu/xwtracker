@@ -4,7 +4,7 @@ import axios from "axios";
 import { Chart } from "react-chartjs-2"
 import { AnimationsSpec, ScriptableContext } from "chart.js";
 import binarySearch from "binary-search"
-import { getSolveTimesOptions } from "./api";
+import { getSolveDataSummaryListOptions } from "./api";
 import { useUser } from "./hooks";
 
 type Point = { x: number, y: number }

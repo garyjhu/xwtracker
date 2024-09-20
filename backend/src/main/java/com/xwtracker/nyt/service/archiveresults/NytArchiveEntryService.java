@@ -39,7 +39,7 @@ public class NytArchiveEntryService {
                 if (puzzleRepository.findByNytId(archiveEntry.getPuzzleID()) == null) {
                     nytPuzzle = puzzleRepository.save(nytPuzzle);
                 }
-                if (solveDataRepository.findByUserAndNytPuzzleId(user.getUid(), archiveEntry.getPuzzleID()) == null) {
+                if (solveDataRepository.findByUserAndPuzzleNytId(user, archiveEntry.getPuzzleID()) == null) {
                     nytSolveData.setUser(user);
                     nytSolveData.setPuzzle(nytPuzzle);
                     SolveGroup nytSolveGroup = solveGroupService.getNytSolveGroupFromPrintDate(archiveEntry.getPrintDate(), user);
@@ -58,7 +58,7 @@ public class NytArchiveEntryService {
     }
 
     private CompletableFuture<NytSolveData> getNytSolveData(NytArchiveEntry archiveEntry, PuzzleTrackerUser user) {
-        SolveData searchResult = solveDataRepository.findByUserAndNytPuzzleId(user.getUid(), archiveEntry.getPuzzleID());
+        SolveData searchResult = solveDataRepository.findByUserAndPuzzleNytId(user, archiveEntry.getPuzzleID());
         return searchResult == null
             ? nytService.fetchSolveDataFromArchive(archiveEntry.getPuzzleID(), user)
             : CompletableFuture.completedFuture((NytSolveData) searchResult);

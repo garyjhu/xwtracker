@@ -1,20 +1,25 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
 
+export interface Puzzle {
+  title: string
+}
+
+export interface NytPuzzle extends Puzzle {
+  nytId: number,
+  svg: string,
+  nytPrintDate: string
+}
+
 export interface SolveData {
   id: number,
   cells: SolveDataCell[],
   height: number,
   width: number,
   time: number,
-  checks: number,
-  reveals: number,
   date: Date,
-  group: string
-  puzzle: {
-    nytId?: number
-    svg: string
-    title?: string
-  }
+  defaultGroup: { name: string },
+  groups: { name: string }[]
+  puzzle: Puzzle
 }
 
 export interface SolveDataCell {
@@ -23,14 +28,19 @@ export interface SolveDataCell {
   guess: string
 }
 
-export interface SolveTimesListItem {
-  solveDataId: number,
-  solveTime: number,
-  solveDate: Date
+export type SolveDataSearchKeyType = "solveDataId" | "nytPrintDate"
+
+export type SolveDataSearchKey = Exclude<{ [K in SolveDataSearchKeyType]?: string }, { [K in SolveDataSearchKeyType]: unknown }>
+
+export interface SolveDataSummary {
+  id: number,
+  title: string,
+  time: number,
+  date: Date
 }
 
 export interface GraphProps {
-  solveTimesList: SolveTimesListItem[],
+  solveTimesList: SolveDataSummary[],
   solveData?: SolveData
 }
 

@@ -26,7 +26,7 @@ public class NytPuzzleDeserializer extends StdDeserializer<NytPuzzle> {
         nytPuzzle.setConstructors(node.get("constructors").get(0).asText());
         nytPuzzle.setEditor(node.get("editor").asText());
         nytPuzzle.setNytId(node.get("id").asLong());
-        nytPuzzle.setPublicationDate(node.get("publicationDate").asText());
+        nytPuzzle.setNytPrintDate(node.get("publicationDate").asText());
         if (node.get("title") != null) {
             nytPuzzle.setTitle(node.get("title").asText());
         }

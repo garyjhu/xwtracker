@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @Entity
-@Table(indexes = {@Index(columnList = "nyt_id")})
+@Table(indexes = {@Index(columnList = "nyt_id"), @Index(columnList = "nyt_print_date")})
 public class Puzzle {
     @Id
     @GeneratedValue
@@ -23,6 +23,7 @@ public class Puzzle {
     private Integer height;
     private Integer width;
     private String constructors;
+    private String nytPrintDate;
     private String title;
 
     public Long getNytId() {
@@ -71,6 +72,14 @@ public class Puzzle {
 
     public void setConstructors(String constructors) {
         this.constructors = constructors;
+    }
+
+    public String getNytPrintDate() {
+        return nytPrintDate;
+    }
+
+    public void setNytPrintDate(String nytPrintDate) {
+        this.nytPrintDate = nytPrintDate;
     }
 
     public String getTitle() {

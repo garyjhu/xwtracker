@@ -9,7 +9,6 @@ import jakarta.persistence.Entity;
 @JsonDeserialize(using = NytPuzzleDeserializer.class)
 public class NytPuzzle extends Puzzle {
     private String editor;
-    private String publicationDate;
     @Column(length = 100000)
     private String svg;
 
@@ -19,14 +18,6 @@ public class NytPuzzle extends Puzzle {
 
     public void setEditor(String editor) {
         this.editor = editor;
-    }
-
-    public String getPublicationDate() {
-        return publicationDate;
-    }
-
-    public void setPublicationDate(String publicationDate) {
-        this.publicationDate = publicationDate;
     }
 
     public String getSvg() {

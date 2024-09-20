@@ -10,6 +10,8 @@ import Dashboard from "./Dashboard"
 import PrivateRoute from "./PrivateRoute";
 import Profile from "./Profile";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import SolveDataPage from "./SolveDataPage";
+import ErrorPage from "./ErrorPage";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +35,14 @@ const router = createBrowserRouter([
         )
       },
       {
+        path: "/puzzle",
+        element: (
+          <PrivateRoute>
+            <SolveDataPage />
+          </PrivateRoute>
+        )
+      },
+      {
         path: "/login",
         element: <Login />
       },
@@ -47,7 +57,7 @@ const router = createBrowserRouter([
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: Infinity
+      staleTime: 1000
     }
   }
 })

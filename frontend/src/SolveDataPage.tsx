@@ -1,18 +1,29 @@
 import {useQuery} from "@tanstack/react-query"
-import {useParams} from "react-router-dom";
-import axios from "axios";
-import {GetSolveTimesResponse} from "./types";
-import { getSolveTimesOptions } from "./api";
-import { useUser } from "./hooks";
+import { useSearchParams } from "react-router-dom";
+import { getSolveDataOptions } from "./api";
+import { useAuthenticatedUser } from "./hooks";
+import PuzzleGrid from "./PuzzleGrid";
 
 export default function SolveDataPage() {
-  const { solveDataId } = useParams()
-  const user = useUser()
-  const solveDataQuery = useQuery({
-    queryKey: ["getSolveData"]
-  })
-  const info = useQuery({ queryKey: ["solveTimes", ]})
-  const solveTimesQuery = useQuery(getSolveTimesOptions(useUser(), solveData.group))
-  const solveTimesList = solveTimesQuery.data
-  if (!solveTimesList) return null
+  const [searchParams] = useSearchParams()
+  const searchKey = {
+    solveDataId: searchParams.get("id") || undefined,
+    nytPrintDate: searchParams.get("date") || undefined
+  }
+  if (!searchKey.solveDataId && !searchKey.nytPrintDate) {
+    throw new Error("Solve data not found.")
+  }
+
+  const user = useAuthenticatedUser()
+  const { isPending, isError, data: solveData, error, fetchStatus } = useQuery(getSolveDataOptions(user, searchKey))
+
+  if (isPending) {
+    return <span>Loading... {fetchStatus}</span>
+  }
+
+  if (isError) return <span>Error: {error.message}</span>
+
+  return (
+    <PuzzleGrid solveData={solveData} showAnswers />
+  )
 }
