@@ -4,6 +4,7 @@ import { getSolveDataOptions } from "./api";
 import { useAuthenticatedUser } from "./hooks";
 import PuzzleGrid from "./PuzzleGrid";
 import ImprovementGraph from "./ImprovementGraph";
+import DistributionGraph from "./DistributionGraph";
 
 export default function SolveDataPage() {
   const [searchParams] = useSearchParams()
@@ -24,6 +25,7 @@ export default function SolveDataPage() {
   return (
     <>
       <ImprovementGraph solveGroup={solveData.defaultGroup.name} solveData={solveData} />
+      <DistributionGraph solveGroup={solveData.defaultGroup.name} solveData={solveData} />
       <PuzzleGrid searchKey={searchKey} solveData={solveData} showAnswers />
     </>
   )

@@ -1,6 +1,6 @@
 import { SolveData } from "./types";
 import { isNyt } from "./predicates";
-import { format, parse } from "date-fns";
+import { Duration, format, formatDuration, intervalToDuration, parse } from "date-fns";
 
 export function getTitle(solveData: SolveData) {
   let title = solveData.puzzle.title
@@ -14,5 +14,22 @@ export function getTitle(solveData: SolveData) {
 }
 
 export function getSolveTimeFormatted(solveData: SolveData) {
-  return new Date(solveData.time * 1000).toISOString().slice(11, 19)
+  return formatSeconds(solveData.time)
+}
+
+export function formatSeconds(seconds: number) {
+  const duration = intervalToDuration({ start: 0, end: seconds * 1000 })
+  let format: (keyof Duration)[] = ["minutes", "seconds"]
+  if (duration.days) format = ["days", "hours", "minutes", "seconds"]
+  else if (duration.hours) format = ["hours", "minutes", "seconds"]
+  format.forEach(key => duration[key] ??= 0)
+  const zeroPad = (num: number) => String(num).padStart(2, "0")
+  return formatDuration(duration, {
+    format,
+    zero: true,
+    delimiter: ":",
+    locale: {
+      formatDistance: (_token, count) => zeroPad(count)
+    }
+  })
 }
