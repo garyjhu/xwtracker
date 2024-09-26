@@ -52,9 +52,19 @@ export async function getSolveDataSummaryList(user: User, group: string) {
 
 export async function getSolveData(user: User, key: SolveDataSearchKey) {
   const idToken = await user.getIdToken(true)
-  const url = key.solveDataId
-    ? `${BASE_URL}/solvedata?id=${key.solveDataId}`
-    : `${BASE_URL}/nyt/solvedata?print_date=${key.nytPrintDate}`
+  let url
+  if (key.id) {
+    url = `${BASE_URL}/solvedata?id=${key.id}`
+  }
+  else if (key.puzzleId) {
+    url = `${BASE_URL}/solvedata?puzzle_id=${key.puzzleId}`
+  }
+  else if (key.nytPrintDate) {
+    url = `${BASE_URL}/nyt/solvedata?print_date=${key.nytPrintDate}`
+  }
+  else {
+    throw new Error("Solve data not found")
+  }
   const response = await axios.get<SolveData>(url, {
     headers: {
       Authorization: "bearer " + idToken

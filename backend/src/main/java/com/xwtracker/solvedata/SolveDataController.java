@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class SolveDataController {
@@ -30,8 +31,14 @@ public class SolveDataController {
         this.solveGroupRepository = solveGroupRepository;
     }
 
+    @GetMapping(value = "/solvedata", params = {"id"})
+    public ResponseEntity<SolveData> getSolveData(@RequestParam Long id) {
+        Optional<SolveData> solveData = solveDataRepository.findById(id);
+        return ResponseEntity.of(solveData);
+    }
+
     @GetMapping(value = "/solvedata", params = {"puzzle_id"})
-    public ResponseEntity<SolveData> getSolveData(Principal principal, @RequestParam Long puzzleId) {
+    public ResponseEntity<SolveData> getSolveData(Principal principal, @RequestParam(name = "puzzle_id") Long puzzleId) {
         PuzzleTrackerUser user = userRepository.getReferenceById(principal.getName());
         SolveData solveData = solveDataRepository.findByUserAndPuzzleId(user, puzzleId);
         return ResponseEntity.ofNullable(solveData);
@@ -45,10 +52,10 @@ public class SolveDataController {
     }
 
     @GetMapping(value = "/solvedata", params = {"group"})
-    public ResponseEntity<List<SolveDataSummary>> getSolveData(Principal principal, @RequestParam("group") String groupName) {
+    public ResponseEntity<List<SolveDataSummary>> getSolveDataByGroup(Principal principal, @RequestParam("group") String groupName) {
         PuzzleTrackerUser user = userRepository.getReferenceById(principal.getName());
         SolveGroup group = solveGroupRepository.findByNameAndUser(groupName, user);
-        List<SolveDataSummary> list = solveDataRepository.findSolveDataByGroupsContaining(group);
+        List<SolveDataSummary> list = solveDataRepository.findSolveDataByGroupsContainingOrderByDate(group);
         return ResponseEntity.ok(list);
     }
 }

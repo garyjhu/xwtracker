@@ -3,15 +3,13 @@ import { useSearchParams } from "react-router-dom";
 import { getSolveDataOptions } from "./api";
 import { useAuthenticatedUser } from "./hooks";
 import PuzzleGrid from "./PuzzleGrid";
+import ImprovementGraph from "./ImprovementGraph";
 
 export default function SolveDataPage() {
   const [searchParams] = useSearchParams()
   const searchKey = {
-    solveDataId: searchParams.get("id") || undefined,
+    puzzleId: searchParams.get("id") || undefined,
     nytPrintDate: searchParams.get("date") || undefined
-  }
-  if (!searchKey.solveDataId && !searchKey.nytPrintDate) {
-    throw new Error("Solve data not found.")
   }
 
   const user = useAuthenticatedUser()
@@ -24,6 +22,9 @@ export default function SolveDataPage() {
   if (isError) return <span>Error: {error.message}</span>
 
   return (
-    <PuzzleGrid solveData={solveData} showAnswers />
+    <>
+      <ImprovementGraph solveGroup={solveData.defaultGroup.name} solveData={solveData} />
+      <PuzzleGrid searchKey={searchKey} solveData={solveData} showAnswers />
+    </>
   )
 }

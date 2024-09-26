@@ -18,5 +18,5 @@ public interface SolveDataRepository extends JpaRepository<SolveData, Long> {
 
     Page<SolveData> findByUser(PuzzleTrackerUser user, Pageable pageable);
 
-    List<SolveDataSummary> findSolveDataByGroupsContaining(SolveGroup group);
+    List<SolveDataSummary> findSolveDataByGroupsContainingOrderByDate(SolveGroup group);
 }

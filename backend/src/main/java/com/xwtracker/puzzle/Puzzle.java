@@ -26,6 +26,10 @@ public class Puzzle {
     private String nytPrintDate;
     private String title;
 
+    public Long getId() {
+        return id;
+    }
+
     public Long getNytId() {
         return nytId;
     }

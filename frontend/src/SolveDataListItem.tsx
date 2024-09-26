@@ -5,6 +5,7 @@ import styles from "./SolveDataListItem.module.css"
 import { format, parse } from "date-fns";
 import { isNyt } from "./predicates";
 import { useNavigate } from "react-router-dom";
+import { getSolveTimeFormatted, getTitle } from "./tools";
 
 interface SolveDataListItemProps {
   solveData: SolveData;
@@ -12,14 +13,6 @@ interface SolveDataListItemProps {
 
 function SolveDataListItem({ solveData }: SolveDataListItemProps) {
   const navigate = useNavigate()
-
-  let title = solveData.puzzle.title
-  if (isNyt(solveData.puzzle)) {
-    const desc = `New York Times - ${format(parse(solveData.puzzle.nytPrintDate, "yyyy-MM-dd", new Date()), "EEEE, MMMM d, y")}`
-    if (!title) title = desc
-    else title = `${title} (${desc})`
-  }
-  else if (!title) title = "Untitled Puzzle"
 
   const handleClick = () => {
     if (isNyt(solveData.puzzle)) {
@@ -33,11 +26,11 @@ function SolveDataListItem({ solveData }: SolveDataListItemProps) {
   return (
     <Button className={styles.button} fullWidth onClick={handleClick}>
       <Center className={styles["box-puzzle"]} inline>
-        <PuzzleGrid solveData={solveData}/>
+        <PuzzleGrid searchKey={{ puzzleId: solveData.puzzle.id }} solveData={solveData} />
       </Center>
       <Box className={styles["box-info"]}>
-        <h1>{title}</h1>
-        <h1>{new Date(solveData.time * 1000).toISOString().slice(11, 19)}</h1>
+        <h1>{getTitle(solveData)}</h1>
+        <h1>{getSolveTimeFormatted(solveData)}</h1>
       </Box>
     </Button>
   )

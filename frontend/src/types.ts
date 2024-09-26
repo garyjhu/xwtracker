@@ -1,6 +1,7 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
 
 export interface Puzzle {
+  id: string
   title: string
 }
 
@@ -11,7 +12,7 @@ export interface NytPuzzle extends Puzzle {
 }
 
 export interface SolveData {
-  id: number,
+  id: string,
   cells: SolveDataCell[],
   height: number,
   width: number,
@@ -28,20 +29,17 @@ export interface SolveDataCell {
   guess: string
 }
 
-export type SolveDataSearchKeyType = "solveDataId" | "nytPrintDate"
-
-export type SolveDataSearchKey = Exclude<{ [K in SolveDataSearchKeyType]?: string }, { [K in SolveDataSearchKeyType]: unknown }>
+export type SolveDataSearchKey = {
+  id?: string,
+  puzzleId?: string,
+  nytPrintDate?: string
+}
 
 export interface SolveDataSummary {
-  id: number,
+  id: string,
   title: string,
   time: number,
   date: Date
-}
-
-export interface GraphProps {
-  solveTimesList: SolveDataSummary[],
-  solveData?: SolveData
 }
 
 export interface AuthContextValues {
