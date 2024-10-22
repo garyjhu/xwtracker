@@ -1,9 +1,11 @@
 .box-info {
+    opacity: 1;
     padding: 1rem;
     text-align: start;
 }
 
 .box-puzzle {
+    opacity: 1;
     aspect-ratio: 1;
     height: 100%;
     padding: 1rem;
@@ -21,4 +23,5 @@
 .button {
     display: flex;
     height: 10rem;
+    opacity: 0.5;
 }

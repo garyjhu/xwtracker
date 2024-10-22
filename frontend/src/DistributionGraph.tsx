@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getSolveDataSummaryListOptions } from "./api";
 import { useAuthenticatedUser } from "./hooks";
 import { Chart } from "react-chartjs-2";
-import { ChartData, ChartOptions, Ticks } from "chart.js";
+import { ChartData, ChartOptions } from "chart.js";
 import { bin } from "d3-array";
 import { useMantineTheme } from "@mantine/core";
 import { formatSeconds } from "./tools";
@@ -12,7 +12,7 @@ interface GraphProps {
   solveGroup: string,
   solveData?: SolveData
 }
-export default function DistributionGraph({ solveGroup }: GraphProps) {
+export default function DistributionGraph({ solveGroup, solveData }: GraphProps) {
   const user = useAuthenticatedUser()
   const theme = useMantineTheme()
 
@@ -33,7 +33,12 @@ export default function DistributionGraph({ solveGroup }: GraphProps) {
     datasets: [{
       data: bins.map(bin => bin.length),
       barPercentage: 1.2,
-      backgroundColor: theme.primaryColor
+      backgroundColor: bins.map((bin, index) => {
+        if (solveData && bin.x0 !== undefined && bin.x1 !== undefined && bin.x0 <= solveData.time && (solveData.time < bin.x1 || index == bins.length - 1)) {
+          return "blue"
+        }
+        return theme.primaryColor
+      })
     }]
   }
 
@@ -64,5 +69,9 @@ export default function DistributionGraph({ solveGroup }: GraphProps) {
     }
   }
 
-  return <Chart type={"bar"} data={data} options={options} />
+  return (
+    <div style={{ margin: "10rem" }}>
+      <Chart type={"bar"} data={data} options={options} />
+    </div>
+  )
 }

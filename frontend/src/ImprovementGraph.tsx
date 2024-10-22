@@ -18,6 +18,7 @@ import "date-fns"
 import { useMantineTheme } from "@mantine/core";
 import { useRef } from "react";
 import ExternalTooltip, { SetTooltipState } from "./ExternalTooltip";
+import { quickselect } from "d3-array";
 
 interface GraphProps {
   solveGroup: string,
@@ -36,25 +37,15 @@ const getScatterDataset = (solveDataSummaryList: SolveDataSummary[]): ChartDatas
 
 const getLineDataset = (solveDataSummaryList: SolveDataSummary[]): ChartDataset<"line"> => {
   let data: Point[] = []
-  for (let i = 0, min = Number.MAX_SAFE_INTEGER; i < solveDataSummaryList.length; i++) {
-    if (solveDataSummaryList[i].time < min) {
-      if (i !== 0) {
-        data.push({
-          x: new Date(solveDataSummaryList[i].date).getTime(),
-          y: min / 60
-        })
-      }
-      min = solveDataSummaryList[i].time
-      data.push({
-        x: new Date(solveDataSummaryList[i].date).getTime(),
-        y: min / 60
-      })
+  let min = Number.MAX_SAFE_INTEGER
+  for (const item of solveDataSummaryList) {
+    const [x, y] = [new Date(item.date).getTime(), item.time / 60]
+    if (min !== Number.MAX_SAFE_INTEGER) {
+      data.push({ x, y: min })
     }
-    else {
-      data.push({
-        x: new Date(solveDataSummaryList[i].date).getTime(),
-        y: min / 60
-      })
+    if (y < min) {
+      data.push({ x, y })
+      min = y
     }
   }
   return { type: "line", data, animations: getLineAnimations(data) }
@@ -63,21 +54,22 @@ const getLineDataset = (solveDataSummaryList: SolveDataSummary[]): ChartDataset<
 const getScatterAnimations = (data: Point[]): AnimationsSpec<"line"> => {
   const min = data[0].x
   const max = data[data.length - 1].x
-  const animations = (ctx: ScriptableContext<"scatter">) => ctx.type === "data"
-    ? {
-        radius: {
-          from: 0,
-          fn: (from: number, to: number, factor: number) => {
-            const fact = (ctx.parsed.x - min) / (max - min)
-            const ret = (1 - (Math.min(Math.max(10 * (fact - factor), 0), 1)))
-            return ret * to
-          }
-        },
-        y: {
-          fn: (from: number, to: number) => to
-        },
-      }
-    : undefined
+  const animations = (ctx: ScriptableContext<"scatter">) => {
+    if (ctx.type !== "data" || ctx.mode !== "default") return undefined
+    return {
+      radius: {
+        from: 0,
+        fn: (from: number, to: number, factor: number) => {
+          const fact = (ctx.parsed.x - min) / (max - min)
+          const ret = (1 - (Math.min(Math.max(10 * (fact - factor), 0), 1)))
+          return ret * to
+        }
+      },
+      y: {
+        fn: (from: number, to: number) => to
+      },
+    }
+  }
   return animations as unknown as AnimationsSpec<"line">
 }
 
@@ -99,37 +91,38 @@ const getLineAnimations = (data: Point[]): AnimationsSpec<"line"> => {
       y: data[ceil - 1].y + segmentFactor * (data[ceil].y - data[ceil - 1].y)
     }
   }
-  const animations = (ctx: ScriptableContext<"line">) => ctx.type === "data"
-    ? {
-        x: {
-          from: data[0].x,
-          fn: (from: number, to: number, factor: number) => {
-            let point = factorToPoint.get(factor)
-            if (!point) {
-              point = computePoint(factor)
-              factorToPoint.set(factor, point)
-            }
-            return ctx.chart.scales.x.getPixelForValue(Math.min(point.x, ctx.parsed.x))
+  const animations = (ctx: ScriptableContext<"line">) => {
+    if (ctx.type !== "data") return undefined
+    return {
+      x: {
+        from: data[0].x,
+        fn: (from: number, to: number, factor: number) => {
+          let point = factorToPoint.get(factor)
+          if (!point) {
+            point = computePoint(factor)
+            factorToPoint.set(factor, point)
           }
-        },
-        y: {
-          from: data[0].y,
-          fn: (from: number, to: number, factor: number) => {
-            let point = factorToPoint.get(factor)
-            if (!point) {
-              point = computePoint(factor)
-              factorToPoint.set(factor, point)
-            }
-            return ctx.chart.scales.y.getPixelForValue(point.x < ctx.parsed.x ? point.y : ctx.parsed.y)
+          return ctx.chart.scales.x.getPixelForValue(Math.min(point.x, ctx.parsed.x))
+        }
+      },
+      y: {
+        from: data[0].y,
+        fn: (from: number, to: number, factor: number) => {
+          let point = factorToPoint.get(factor)
+          if (!point) {
+            point = computePoint(factor)
+            factorToPoint.set(factor, point)
           }
+          return ctx.chart.scales.y.getPixelForValue(point.x < ctx.parsed.x ? point.y : ctx.parsed.y)
         }
       }
-    : undefined
+    }
+  }
   return animations as unknown as AnimationsSpec<"line">
 }
 
 
-export default function ImprovementGraph({ solveGroup }: GraphProps) {
+export default function ImprovementGraph({ solveGroup, solveData }: GraphProps) {
   const user = useAuthenticatedUser()
   const theme = useMantineTheme()
   const ref = useRef<HTMLDivElement>(null)
@@ -142,6 +135,9 @@ export default function ImprovementGraph({ solveGroup }: GraphProps) {
   }
 
   if (isError) return <span>Error: {error.message}</span>
+
+  const solveTimes = solveDataSummaryList.map(summary => summary.time)
+  const [gold, silver, bronze] = [0, 1, 2].map(k => quickselect(solveTimes, k)[k])
 
   Interaction.modes.scatterOnly = (chart: ChartJS, e: ChartEvent, options: InteractionOptions, useFinalPosition?: boolean) => {
     return Interaction.modes.index(chart, e, options, useFinalPosition).filter(item => item.datasetIndex === 0)
@@ -156,12 +152,13 @@ export default function ImprovementGraph({ solveGroup }: GraphProps) {
       }
       else {
         const { offsetLeft: positionX, offsetTop: positionY } = chart.canvas
+        console.log(positionX, positionY, tooltip.caretX, tooltip.caretY)
         setState({
           solveDataId: solveDataSummaryList[tooltip.dataPoints[0].dataIndex].id,
           style: {
             opacity: 1,
             left: positionX + tooltip.caretX + "px",
-            top: positionY + tooltip.caretY + "px",
+            top: positionY + tooltip.caretY + 10 + "px",
           }
         })
       }
@@ -172,13 +169,19 @@ export default function ImprovementGraph({ solveGroup }: GraphProps) {
     datasets: [
       {
         ...getScatterDataset(solveDataSummaryList),
-        pointBackgroundColor: "cyan",
-        pointHoverBackgroundColor: "green",
+        pointBackgroundColor: solveDataSummaryList.map(item => {
+          if (solveData && item.id === solveData.id) return "blue"
+          if (item.time === gold) return "gold"
+          if (item.time === silver) return "silver"
+          if (item.time === bronze) return "orange"
+          return theme.primaryColor
+        }),
         pointRadius: 5,
+        pointHoverRadius: 8
       },
       {
         ...getLineDataset(solveDataSummaryList),
-        borderColor: theme.primaryColor,
+        borderColor: "yellow",
         pointRadius: 0,
       }
     ],
@@ -226,7 +229,7 @@ export default function ImprovementGraph({ solveGroup }: GraphProps) {
           }
         }
       }
-    }
+    },
   }
 
   const plugins: Plugin[] = [{
