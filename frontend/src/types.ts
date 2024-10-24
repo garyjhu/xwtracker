@@ -18,8 +18,8 @@ export interface SolveData {
   width: number,
   time: number,
   date: Date,
-  defaultGroup: { name: string },
-  groups: { name: string }[]
+  defaultGroup: SolveGroup,
+  groups: SolveGroup[],
   puzzle: Puzzle
 }
 
@@ -27,6 +27,11 @@ export interface SolveDataCell {
   id: number,
   blank: boolean,
   guess: string
+}
+
+export interface SolveGroup {
+  name: string,
+  color: string
 }
 
 export type SolveDataSearchKey = {

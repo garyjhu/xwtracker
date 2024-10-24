@@ -1,8 +1,7 @@
-import { Box, Button, Center, useMantineTheme } from "@mantine/core";
+import { Box, Button, Center, Pill, PillGroup } from "@mantine/core";
 import PuzzleGrid from "./PuzzleGrid";
 import {SolveData} from "./types";
 import styles from "./SolveDataListItem.module.css"
-import { format, parse } from "date-fns";
 import { isNyt } from "./predicates";
 import { useNavigate } from "react-router-dom";
 import { getSolveTimeFormatted, getTitle } from "./tools";
@@ -29,7 +28,16 @@ function SolveDataListItem({ solveData }: SolveDataListItemProps) {
         <PuzzleGrid searchKey={{ puzzleId: solveData.puzzle.id }} solveData={solveData} />
       </Center>
       <Box className={styles["box-info"]}>
-        <h1>{getTitle(solveData)}</h1>
+        <h1 className={styles.title}>
+          <span>{getTitle(solveData)}</span>
+          <PillGroup>
+            {solveData.groups.map(group => (
+              <Pill key={group.name} size={"lg"} style={{ backgroundColor: group.color }}>
+                {group.name}
+              </Pill>
+            ))}
+          </PillGroup>
+        </h1>
         <h1>{getSolveTimeFormatted(solveData)}</h1>
       </Box>
     </Button>

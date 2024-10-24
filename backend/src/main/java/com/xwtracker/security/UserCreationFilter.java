@@ -35,13 +35,13 @@ public class UserCreationFilter extends OncePerRequestFilter {
         if (userRepository.findById(uid).isEmpty()) {
             PuzzleTrackerUser user = new PuzzleTrackerUser(uid);
             List<SolveGroup> solveGroups = user.getSolveGroups();
-            solveGroups.add(new SolveGroup("NYT Monday", user));
-            solveGroups.add(new SolveGroup("NYT Tuesday", user));
-            solveGroups.add(new SolveGroup("NYT Wednesday", user));
-            solveGroups.add(new SolveGroup("NYT Thursday", user));
-            solveGroups.add(new SolveGroup("NYT Friday", user));
-            solveGroups.add(new SolveGroup("NYT Saturday", user));
-            solveGroups.add(new SolveGroup("NYT Sunday", user));
+            solveGroups.add(new SolveGroup("NYT Monday", user, "#ffadad"));
+            solveGroups.add(new SolveGroup("NYT Tuesday", user, "#ffd6a5"));
+            solveGroups.add(new SolveGroup("NYT Wednesday", user, "#fdffb6"));
+            solveGroups.add(new SolveGroup("NYT Thursday", user, "#caffbf"));
+            solveGroups.add(new SolveGroup("NYT Friday", user, "#9bf6ff"));
+            solveGroups.add(new SolveGroup("NYT Saturday", user, "#a0c4ff"));
+            solveGroups.add(new SolveGroup("NYT Sunday", user, "#bdb2ff"));
             userRepository.save(user);
         }
         filterChain.doFilter(request, response);

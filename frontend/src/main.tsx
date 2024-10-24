@@ -64,6 +64,7 @@ const queryClient = new QueryClient({
 
 const theme = createTheme({
   autoContrast: true,
+  fontFamily: "Roboto",
   primaryColor: "aquamarine",
   primaryShade: 2,
   colors: {

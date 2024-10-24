@@ -14,12 +14,14 @@ public class SolveGroup {
     @JoinColumn(name = "solver_uid", nullable = false)
     @JsonIgnore
     private PuzzleTrackerUser user;
+    private String color;
 
     public SolveGroup() {}
 
-    public SolveGroup(String name, PuzzleTrackerUser user) {
+    public SolveGroup(String name, PuzzleTrackerUser user, String color) {
         this.name = name;
         this.user = user;
+        this.color = color;
     }
 
     public String getName() {
@@ -28,5 +30,13 @@ public class SolveGroup {
 
     public PuzzleTrackerUser getUser() {
         return user;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }
