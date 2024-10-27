@@ -25,13 +25,13 @@ export default function Profile() {
 
   const onSubmit = async (data: ProfileFormValues) => {
     const idToken = await user?.getIdToken(true)
-    await axios.put("http://localhost:8080/cookie", data.nytSCookie, {
+    await axios.put("http://localhost:8080/user/cookie", data.nytSCookie, {
       headers: {
         Authorization: "bearer " + idToken,
         "Content-Type": "application/json"
       }
     })
-    const firstNytPublishDate = new Date(2023, 8, 21)
+    const firstNytPublishDate = new Date(2024, 8, 21)
     let endDate = new Date()
     while (endDate >= firstNytPublishDate) {
       let startDate = startOfMonth(endDate)

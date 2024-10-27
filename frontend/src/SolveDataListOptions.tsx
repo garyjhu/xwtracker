@@ -1,8 +1,8 @@
 import styles from "./SolveDataListOptions.module.css";
-import { NativeSelect, SegmentedControl } from "@mantine/core";
+import { MultiSelect, NativeSelect, SegmentedControl } from "@mantine/core";
 import { DashboardState } from "./Dashboard";
-import { SortName } from "./types";
 import { ChangeEvent } from "react";
+import GroupSelect from "./GroupSelect";
 
 interface SolveDataListOptionsProps {
   state: DashboardState,
@@ -41,6 +41,7 @@ export default function SolveDataListOptions({ state, handleChange }: SolveDataL
 
   return (
     <div className={styles["list-options"]}>
+      <GroupSelect />
       <h4 className={styles["list-option-container"]}>
         <span>Sort by:</span>
         <SegmentedControl

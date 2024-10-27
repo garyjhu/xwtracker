@@ -2,7 +2,7 @@ import {
   GetSolveDataListResponse,
   SolveData,
   SolveDataSearchKey,
-  SolveDataSummary,
+  SolveDataSummary, SolveGroup,
   SortDirection,
   SortName
 } from "./types";
@@ -92,9 +92,19 @@ export async function updateNytSolveData(user: User, startDate: Date, endDate: D
   const idToken = await user.getIdToken(true)
   const startDateFormatted = format(startDate, "yyyy-MM-dd")
   const endDateFormatted = format(endDate, "yyyy-MM-dd")
-  return await axios.post(`http://localhost:8080/nyt?dateStart=${startDateFormatted}&dateEnd=${endDateFormatted}`, null, {
+  return await axios.post(`${BASE_URL}/nyt?dateStart=${startDateFormatted}&dateEnd=${endDateFormatted}`, null, {
     headers: {
       Authorization: "bearer " + idToken
     }
   })
+}
+
+export async function fetchSolveGroups(user: User) {
+  const idToken = await user.getIdToken(true)
+  const response = await axios.get<SolveGroup[]>(`${BASE_URL}/user/groups`, {
+    headers: {
+      Authorization: "bearer " + idToken
+    }
+  })
+  return response.data
 }
