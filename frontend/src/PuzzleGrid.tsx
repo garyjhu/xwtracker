@@ -4,7 +4,7 @@ import parse, { attributesToProps, DOMNode, domToReact, Element } from "html-rea
 import { useEffect, useRef, useState } from "react";
 import { isNyt } from "./predicates";
 import { useQuery } from "@tanstack/react-query";
-import { getSolveData, getSolveDataOptions } from "./api";
+import { fetchSolveData, fetchSolveDataOptions } from "./api";
 import { useAuthenticatedUser } from "./hooks";
 
 interface PuzzleGridProps {
@@ -35,7 +35,7 @@ export default function PuzzleGrid({ searchKey, solveData, showAnswers }: Puzzle
 
   const { isPending, isError, data, error, fetchStatus } = useQuery({
     queryKey: ["getSolveData", user.uid, searchKey],
-    queryFn: () => getSolveData(user, searchKey),
+    queryFn: () => fetchSolveData(user, searchKey),
     initialData: solveData
   })
 

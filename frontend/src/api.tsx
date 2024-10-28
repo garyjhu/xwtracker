@@ -13,44 +13,21 @@ import { format } from "date-fns";
 
 const BASE_URL = "http://localhost:8080"
 
-export function getSolveDataSummaryListOptions(user: User, group: string) {
+export function fetchSolveDataSummaryListOptions(user: User, groups: string[]) {
   return queryOptions({
-    queryKey: ["getSolveDataSummaryList", user.uid, group],
-    queryFn: () => getSolveDataSummaryList(user, group)
+    queryKey: ["getSolveDataSummaryList", user.uid, groups],
+    queryFn: () => fetchSolveDataSummaryList(user, "date", "asc", groups)
   })
 }
 
-export function getSolveDataOptions(user: User, key: SolveDataSearchKey) {
+export function fetchSolveDataOptions(user: User, key: SolveDataSearchKey) {
   return queryOptions({
     queryKey: ["getSolveData", user.uid, key],
-    queryFn: () => getSolveData(user, key)
+    queryFn: () => fetchSolveData(user, key)
   })
 }
 
-export function getSolveDataListOptions(
-    user: User,
-    pageIndex: number,
-    pageSize: number,
-    sortName: SortName = "date",
-    sortDir: SortDirection = "desc"
-) {
-  return queryOptions({
-    queryKey: ["getSolveDataList", user.uid, pageIndex, pageSize, sortName, sortDir],
-    queryFn: () => getSolveDataList(user, pageIndex, pageSize, sortName, sortDir)
-  })
-}
-
-export async function getSolveDataSummaryList(user: User, group: string) {
-  const idToken = await user.getIdToken(true)
-  const response = await axios.get<SolveDataSummary[]>(`${BASE_URL}/solvedata?group=${group}`, {
-    headers: {
-      Authorization: "bearer " + idToken
-    }
-  })
-  return response.data
-}
-
-export async function getSolveData(user: User, key: SolveDataSearchKey) {
+export async function fetchSolveData(user: User, key: SolveDataSearchKey) {
   const idToken = await user.getIdToken(true)
   let url
   if (key.id) {
@@ -73,14 +50,33 @@ export async function getSolveData(user: User, key: SolveDataSearchKey) {
   return response.data
 }
 
-export async function getSolveDataList(
+export async function fetchSolveDataList(
     user: User,
     pageIndex: number,
     pageSize: number,
     sortName: SortName,
-    sortDir: SortDirection) {
+    sortDir: SortDirection,
+    groups: string[]
+) {
   const idToken = await user.getIdToken(true)
-  const response = await axios.get<GetSolveDataListResponse>(`${BASE_URL}/solvedata?page=${pageIndex}&size=${pageSize}&sort=${sortName},${sortDir}`, {
+  const groupParams = groups.map(groupName => `&group=${groupName}`).join("")
+  const response = await axios.get<GetSolveDataListResponse>(`${BASE_URL}/solvedata?page=${pageIndex}&size=${pageSize}&sort=${sortName},${sortDir}${groupParams}`, {
+    headers: {
+      Authorization: "bearer " + idToken
+    }
+  })
+  return response.data
+}
+
+export async function fetchSolveDataSummaryList(
+  user: User,
+  sortName: SortName,
+  sortDir: SortDirection,
+  groups: string[]
+) {
+  const idToken = await user.getIdToken(true)
+  const groupParams = groups.map(groupName => `&group=${groupName}`).join("")
+  const response = await axios.get<SolveDataSummary[]>(`${BASE_URL}/solvedata/summary?sort=${sortName},${sortDir}${groupParams}`, {
     headers: {
       Authorization: "bearer " + idToken
     }

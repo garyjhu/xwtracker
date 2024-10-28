@@ -4,6 +4,7 @@ import com.xwtracker.puzzletrackeruser.PuzzleTrackerUser;
 import com.xwtracker.solvegroup.SolveGroup;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -18,5 +19,11 @@ public interface SolveDataRepository extends JpaRepository<SolveData, Long> {
 
     Page<SolveData> findByUser(PuzzleTrackerUser user, Pageable pageable);
 
-    List<SolveDataSummary> findSolveDataByGroupsContainingOrderByDate(SolveGroup group);
+    @Query("select s from SolveData s join s.groups g where g in :groups group by s")
+    Page<SolveData> findByGroups(List<SolveGroup> groups, Pageable pageable);
+
+    List<SolveDataSummary> findSummaryByUser(PuzzleTrackerUser user, Sort sort);
+
+    @Query("select s from SolveData s join s.groups g where g in :groups group by s")
+    List<SolveDataSummary> findSummaryByGroups(List<SolveGroup> groups, Sort sort);
 }

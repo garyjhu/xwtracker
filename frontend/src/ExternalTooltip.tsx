@@ -3,7 +3,7 @@ import { CSSProperties, Dispatch, forwardRef, Ref, SetStateAction, useImperative
 import styles from "./Tooltip.module.css"
 import PuzzleGrid from "./PuzzleGrid";
 import { useQuery } from "@tanstack/react-query";
-import { getSolveData } from "./api";
+import { fetchSolveData } from "./api";
 import { useAuthenticatedUser } from "./hooks";
 import { getSolveTimeFormatted, getTitle } from "./tools";
 
@@ -22,7 +22,7 @@ const ExternalTooltip = forwardRef(function ExternalTooltip(_, ref: Ref<SetToolt
   const searchKey = { id: state.solveDataId }
   const { isPending, isError, data: solveData } = useQuery({
     queryKey: ["getSolveData", user.uid, searchKey],
-    queryFn: () => getSolveData(user, searchKey),
+    queryFn: () => fetchSolveData(user, searchKey),
   })
 
   return (

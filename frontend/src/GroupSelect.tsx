@@ -6,92 +6,63 @@ import {
   PillGroup,
   PillsInput, PillsInputField, useCombobox
 } from "@mantine/core";
-import { useAuthenticatedUser } from "./hooks";
-import { useQuery } from "@tanstack/react-query";
-import { fetchSolveGroups } from "./api";
-import { useState } from "react";
+import { DashboardState, DashboardStateEventHandler } from "./Dashboard";
+import { SolveGroup } from "./types";
 
-interface GroupOptions {
-  color: string,
-  selected: boolean
+type GroupSelectProps = Pick<DashboardState, "selectedGroups"> & {
+  allGroups: SolveGroup[],
+  onChange: DashboardStateEventHandler
 }
-
-type GroupOptionsMap = { [groupName: string]: GroupOptions }
 
 const SELECT_ALL = "$ALL"
 
-export default function GroupSelect() {
-  const user = useAuthenticatedUser()
-  const { isPending, isError, data, error, fetchStatus } = useQuery({
-    queryKey: ["fetchGroupNames", user.uid],
-    queryFn: async () => fetchSolveGroups(user)
-  })
-
+export default function GroupSelect({ selectedGroups, allGroups, onChange }: GroupSelectProps) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption,
     onDropdownOpen: () => combobox.updateSelectedOptionIndex("active")
   })
-  const [groupOptionsMap, setGroupOptionsMap] = useState<GroupOptionsMap>({})
 
-  if (isPending) {
-    return <span>Loading... {fetchStatus}</span>
+  const selectedAll = selectedGroups.size === allGroups.length
+
+  const handleSelectAll = (selected: boolean) => {
+    onChange({
+      selectedGroups: new Set<string>(
+        selected ? allGroups.map(group => group.name) : undefined
+      )
+    })
   }
-
-  if (isError) return <span>Error: {error.message}</span>
-
-  const groupNames = Object.keys(groupOptionsMap)
-  if (groupNames.length === 0) {
-    let map: GroupOptionsMap = {}
-    for (const group of data) {
-      map[group.name] = { color: group.color, selected: true }
-    }
-    setGroupOptionsMap(map)
-  }
-  const selectedGroups = groupNames.filter(group => groupOptionsMap[group].selected)
-  const selectedAll = selectedGroups.length === groupNames.length
 
   const handleValueSelect = (val: string) => {
     if (val === SELECT_ALL) {
       handleSelectAll(!selectedAll)
     }
     else {
-      setGroupOptionsMap(map => ({
-        ...map,
-        [val]: {
-          color: map[val].color,
-          selected: !groupOptionsMap[val].selected
-        }
-      }))
+      onChange({
+        selectedGroups: new Set<string>(
+          allGroups
+            .filter(group => selectedGroups.has(group.name) !== (group.name === val))
+            .map(group => group.name)
+        )
+      })
     }
   }
 
-  const handleSelectAll = (selected: boolean) => {
-    let map: GroupOptionsMap = {}
-    for (const group of data) {
-      map[group.name] = {
-        color: group.color,
-        selected
-      }
-    }
-    setGroupOptionsMap(map)
-  }
-
-
-  const options = groupNames.map(group => (
+  const options = allGroups.map(group => (
     <ComboboxOption
-      value={group}
-      key={group}
-      active={groupOptionsMap[group].selected}
+      value={group.name}
+      key={group.name}
+      active={selectedGroups.has(group.name)}
     >
       <Group>
         <Checkbox
-          checked={groupOptionsMap[group].selected}
+          checked={selectedGroups.has(group.name)}
+          onChange={() => {}}
           style={{ pointerEvents: "none" }}
         />
         <Pill
-          style={{ backgroundColor: groupOptionsMap[group].color }}
+          style={{ backgroundColor: group.color }}
         >
-          {group}
+          {group.name}
         </Pill>
       </Group>
     </ComboboxOption>
@@ -105,6 +76,7 @@ export default function GroupSelect() {
       <Group>
         <Checkbox
           checked={selectedAll}
+          onChange={() => {}}
           style={{ pointerEvents: "none" }}
         />
         <span>
@@ -126,15 +98,16 @@ export default function GroupSelect() {
           style={{ width: 700 }}
         >
           <PillGroup>
-            {selectedGroups.length > 0 ? selectedGroups
+            {selectedGroups.size > 0 ? allGroups
+              .filter(group => selectedGroups.has(group.name))
               .map(group => (
                 <Pill
-                  key={group}
+                  key={group.name}
                   withRemoveButton
-                  onRemove={() => handleValueSelect(group)}
-                  style={{ backgroundColor: groupOptionsMap[group].color }}
+                  onRemove={() => handleValueSelect(group.name)}
+                  style={{ backgroundColor: group.color }}
                 >
-                  {group}
+                  {group.name}
                 </Pill>
               )) : (
               <InputPlaceholder>Choose one or more puzzle categories</InputPlaceholder>

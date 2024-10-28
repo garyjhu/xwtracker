@@ -1,6 +1,6 @@
 import {useQuery} from "@tanstack/react-query"
 import { useSearchParams } from "react-router-dom";
-import { getSolveDataOptions } from "./api";
+import { fetchSolveDataOptions } from "./api";
 import { useAuthenticatedUser } from "./hooks";
 import PuzzleGrid from "./PuzzleGrid";
 import ImprovementGraph from "./ImprovementGraph";
@@ -14,7 +14,7 @@ export default function SolveDataPage() {
   }
 
   const user = useAuthenticatedUser()
-  const { isPending, isError, data: solveData, error, fetchStatus } = useQuery(getSolveDataOptions(user, searchKey))
+  const { isPending, isError, data: solveData, error, fetchStatus } = useQuery(fetchSolveDataOptions(user, searchKey))
 
   if (isPending) {
     return <span>Loading... {fetchStatus}</span>

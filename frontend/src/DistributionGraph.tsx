@@ -1,6 +1,6 @@
 import { SolveData } from "./types";
 import { useQuery } from "@tanstack/react-query";
-import { getSolveDataSummaryListOptions } from "./api";
+import { fetchSolveDataSummaryListOptions } from "./api";
 import { useAuthenticatedUser } from "./hooks";
 import { Chart } from "react-chartjs-2";
 import { ChartData, ChartOptions } from "chart.js";
@@ -16,7 +16,7 @@ export default function DistributionGraph({ solveGroup, solveData }: GraphProps)
   const user = useAuthenticatedUser()
   const theme = useMantineTheme()
 
-  const { isPending, isError, data: solveDataSummaryList, error, fetchStatus } = useQuery(getSolveDataSummaryListOptions(user, solveGroup))
+  const { isPending, isError, data: solveDataSummaryList, error, fetchStatus } = useQuery(fetchSolveDataSummaryListOptions(user, [solveGroup]))
 
   if (isPending) {
     return <span>Loading... {fetchStatus}</span>

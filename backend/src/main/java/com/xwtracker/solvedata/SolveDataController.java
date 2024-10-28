@@ -6,6 +6,7 @@ import com.xwtracker.solvegroup.SolveGroup;
 import com.xwtracker.solvegroup.SolveGroupRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,17 +46,34 @@ public class SolveDataController {
     }
 
     @GetMapping(value = "/solvedata")
-    public ResponseEntity<Page<SolveData>> getSolveData(Principal principal, Pageable pageable) {
+    public ResponseEntity<Page<SolveData>> getSolveData(Principal principal, @RequestParam("group") Optional<List<String>> groupNames, Pageable pageable) {
         PuzzleTrackerUser user = userRepository.getReferenceById(principal.getName());
-        Page<SolveData> page = solveDataRepository.findByUser(user, pageable);
-        return ResponseEntity.ok(page);
+        if (groupNames.isEmpty()) {
+            Page<SolveData> page = solveDataRepository.findByUser(user, pageable);
+            return ResponseEntity.ok(page);
+        }
+        else {
+            List<SolveGroup> groups = groupNames.get().stream()
+                .map(groupName -> solveGroupRepository.findByNameAndUser(groupName, user))
+                .toList();
+            Page<SolveData> page = solveDataRepository.findByGroups(groups, pageable);
+            return ResponseEntity.ok(page);
+        }
     }
 
-    @GetMapping(value = "/solvedata", params = {"group"})
-    public ResponseEntity<List<SolveDataSummary>> getSolveDataByGroup(Principal principal, @RequestParam("group") String groupName) {
+    @GetMapping(value = "/solvedata/summary")
+    public ResponseEntity<List<SolveDataSummary>> getSolveDataByGroup(Principal principal, @RequestParam("group") Optional<List<String>> groupNames, Sort sort) {
         PuzzleTrackerUser user = userRepository.getReferenceById(principal.getName());
-        SolveGroup group = solveGroupRepository.findByNameAndUser(groupName, user);
-        List<SolveDataSummary> list = solveDataRepository.findSolveDataByGroupsContainingOrderByDate(group);
-        return ResponseEntity.ok(list);
+        if (groupNames.isEmpty()) {
+            List<SolveDataSummary> list = solveDataRepository.findSummaryByUser(user, sort);
+            return ResponseEntity.ok(list);
+        }
+        else {
+            List<SolveGroup> groups = groupNames.get().stream()
+                .map(groupName -> solveGroupRepository.findByNameAndUser(groupName, user))
+                .toList();
+            List<SolveDataSummary> list = solveDataRepository.findSummaryByGroups(groups, sort);
+            return ResponseEntity.ok(list);
+        }
     }
 }

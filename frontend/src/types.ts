@@ -42,7 +42,6 @@ export type SolveDataSearchKey = {
 
 export interface SolveDataSummary {
   id: string,
-  title: string,
   time: number,
   date: Date
 }

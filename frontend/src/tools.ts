@@ -1,6 +1,7 @@
 import { SolveData } from "./types";
 import { isNyt } from "./predicates";
 import { Duration, format, formatDuration, intervalToDuration, parse } from "date-fns";
+import { GroupOptionsMap } from "./Dashboard";
 
 export function getTitle(solveData: SolveData) {
   let title = solveData.puzzle.title
@@ -32,4 +33,12 @@ export function formatSeconds(seconds: number) {
       formatDistance: (_token, count) => zeroPad(count)
     }
   })
+}
+
+export function getGroupNames(map: GroupOptionsMap) {
+  return Object.keys(map)
+}
+
+export function getSelectedGroups(map: GroupOptionsMap, groupNames?: string[]) {
+  return (groupNames ?? getGroupNames(map)).filter(group => map[group].selected)
 }

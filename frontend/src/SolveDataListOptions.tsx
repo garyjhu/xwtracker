@@ -1,19 +1,16 @@
 import styles from "./SolveDataListOptions.module.css";
-import { MultiSelect, NativeSelect, SegmentedControl } from "@mantine/core";
-import { DashboardState } from "./Dashboard";
+import { NativeSelect, SegmentedControl } from "@mantine/core";
+import { DashboardState, DashboardStateEventHandler } from "./Dashboard";
 import { ChangeEvent } from "react";
-import GroupSelect from "./GroupSelect";
 
-interface SolveDataListOptionsProps {
-  state: DashboardState,
-  handleChange: (state: DashboardState) => void
+type SolveDataListOptionsProps = Pick<DashboardState, "pageSize" | "sortBy" | "sortDir"> & {
+  onChange: DashboardStateEventHandler
 }
 
-export default function SolveDataListOptions({ state, handleChange }: SolveDataListOptionsProps) {
+export default function SolveDataListOptions({ pageSize, sortBy, sortDir, onChange }: SolveDataListOptionsProps) {
   const handleChangeSortBy = (value: string) => {
     if (value === "date" || value === "time") {
-      handleChange({
-        ...state,
+      onChange({
         page: 1,
         sortBy: value,
         sortDir: value === "date" ? "desc" : "asc"
@@ -23,8 +20,7 @@ export default function SolveDataListOptions({ state, handleChange }: SolveDataL
 
   const handleChangeSortDir = (value: string) => {
     if (value === "asc" || value === "desc") {
-      handleChange({
-        ...state,
+      onChange({
         page: 1,
         sortDir: value
       })
@@ -32,8 +28,7 @@ export default function SolveDataListOptions({ state, handleChange }: SolveDataL
   }
 
   const handleChangePageSize = (e: ChangeEvent<HTMLSelectElement>) => {
-    handleChange({
-      ...state,
+    onChange({
       page: 1,
       pageSize: Number(e.target.value)
     })
@@ -41,11 +36,10 @@ export default function SolveDataListOptions({ state, handleChange }: SolveDataL
 
   return (
     <div className={styles["list-options"]}>
-      <GroupSelect />
       <h4 className={styles["list-option-container"]}>
         <span>Sort by:</span>
         <SegmentedControl
-          value={state.sortBy}
+          value={sortBy}
           onChange={handleChangeSortBy}
           data={[
             { label: "solve date", value: "date" },
@@ -56,18 +50,18 @@ export default function SolveDataListOptions({ state, handleChange }: SolveDataL
       <h4 className={styles["list-option-container"]}>
         <span>Order by:</span>
         <SegmentedControl
-          value={state.sortDir}
+          value={sortDir}
           onChange={handleChangeSortDir}
           data={[
-            { label: state.sortBy === "date" ? "oldest first" : "fastest first", value: "asc" },
-            { label: state.sortBy === "date" ? "newest first" : "slowest first", value: "desc" },
+            { label: sortBy === "date" ? "oldest first" : "fastest first", value: "asc" },
+            { label: sortBy === "date" ? "newest first" : "slowest first", value: "desc" },
           ]}
         />
       </h4>
       <h4 className={styles["list-option-container"]}>
         <span>Showing up to</span>
         <NativeSelect
-          value={state.pageSize}
+          value={pageSize}
           onChange={handleChangePageSize}
           data={["5", "10", "25", "50", "100"]}
           style={{ width: "4rem" }}

@@ -10,7 +10,7 @@ import {
 } from "chart.js";
 import binarySearch from "binary-search"
 import { useQuery } from "@tanstack/react-query";
-import { getSolveDataSummaryListOptions } from "./api";
+import { fetchSolveDataSummaryListOptions } from "./api";
 import { useAuthenticatedUser } from "./hooks";
 import "chart.js/auto"
 import "chartjs-adapter-date-fns"
@@ -128,7 +128,7 @@ export default function ImprovementGraph({ solveGroup, solveData }: GraphProps) 
   const ref = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<SetTooltipState>(null)
 
-  const { isPending, isError, data: solveDataSummaryList, error, fetchStatus } = useQuery(getSolveDataSummaryListOptions(user, solveGroup))
+  const { isPending, isError, data: solveDataSummaryList, error, fetchStatus } = useQuery(fetchSolveDataSummaryListOptions(user, [solveGroup]))
 
   if (isPending) {
     return <span>Loading... {fetchStatus}</span>
