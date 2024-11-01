@@ -7,12 +7,14 @@ import com.xwtracker.solvegroup.SolveGroupRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,17 +48,30 @@ public class SolveDataController {
     }
 
     @GetMapping(value = "/solvedata")
-    public ResponseEntity<Page<SolveData>> getSolveData(Principal principal, @RequestParam("group") Optional<List<String>> groupNames, Pageable pageable) {
+    public ResponseEntity<Page<SolveData>> getSolveData(
+        Principal principal,
+        @RequestParam("group") Optional<List<String>> groupNames,
+        @RequestParam("date_start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Optional<Date> dateStart,
+        @RequestParam("date_end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Optional<Date> dateEnd,
+        Pageable pageable
+    ) {
         PuzzleTrackerUser user = userRepository.getReferenceById(principal.getName());
+        boolean useDateRange = dateStart.isPresent() || dateEnd.isPresent();
+        Date start = dateStart.orElse(new Date(0));
+        Date end = dateEnd.orElse(new Date());
         if (groupNames.isEmpty()) {
-            Page<SolveData> page = solveDataRepository.findByUser(user, pageable);
+            Page<SolveData> page = useDateRange
+                ? solveDataRepository.findByUserAndDateBetween(user, start, end, pageable)
+                : solveDataRepository.findByUser(user, pageable);
             return ResponseEntity.ok(page);
         }
         else {
             List<SolveGroup> groups = groupNames.get().stream()
                 .map(groupName -> solveGroupRepository.findByNameAndUser(groupName, user))
                 .toList();
-            Page<SolveData> page = solveDataRepository.findByGroups(groups, pageable);
+            Page<SolveData> page = useDateRange
+                ? solveDataRepository.findByGroupsAndDateBetween(groups, start, end, pageable)
+                : solveDataRepository.findByGroups(groups, pageable);
             return ResponseEntity.ok(page);
         }
     }

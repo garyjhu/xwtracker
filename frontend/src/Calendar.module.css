@@ -1,0 +1,19 @@
+.day {
+    background-color: var(--background-color);
+
+    @mixin hover {
+        &:where(:not([data-static], [data-disabled], [data-selected], [data-in-range])) {
+            @mixin light {
+                background-color: var(--mantine-primary-color-0);
+            }
+
+            @mixin dark {
+                background-color: var(--mantine-primary-color-5);
+            }
+        }
+    }
+
+    &:where([data-selected]) {
+        background-color: var(--mantine-primary-color-filled);
+    }
+}

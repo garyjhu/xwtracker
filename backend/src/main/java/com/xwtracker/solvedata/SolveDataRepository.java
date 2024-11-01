@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Date;
 import java.util.List;
 
 public interface SolveDataRepository extends JpaRepository<SolveData, Long> {
@@ -19,8 +20,13 @@ public interface SolveDataRepository extends JpaRepository<SolveData, Long> {
 
     Page<SolveData> findByUser(PuzzleTrackerUser user, Pageable pageable);
 
+    Page<SolveData> findByUserAndDateBetween(PuzzleTrackerUser user, Date dateStart, Date dateEnd, Pageable pageable);
+
     @Query("select s from SolveData s join s.groups g where g in :groups group by s")
     Page<SolveData> findByGroups(List<SolveGroup> groups, Pageable pageable);
+
+    @Query("select s from SolveData s join s.groups g where g in :groups and s.date between :dateStart and :dateEnd group by s")
+    Page<SolveData> findByGroupsAndDateBetween(List<SolveGroup> groups, Date dateStart, Date dateEnd, Pageable pageable);
 
     List<SolveDataSummary> findSummaryByUser(PuzzleTrackerUser user, Sort sort);
 

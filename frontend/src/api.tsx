@@ -56,11 +56,17 @@ export async function fetchSolveDataList(
     pageSize: number,
     sortName: SortName,
     sortDir: SortDirection,
-    groups: string[]
+    groups: Iterable<string>,
+    dateStart?: Date,
+    dateEnd?: Date
 ) {
   const idToken = await user.getIdToken(true)
-  const groupParams = groups.map(groupName => `&group=${groupName}`).join("")
-  const response = await axios.get<GetSolveDataListResponse>(`${BASE_URL}/solvedata?page=${pageIndex}&size=${pageSize}&sort=${sortName},${sortDir}${groupParams}`, {
+  const params: string[] = [`page=${pageIndex}`, `size=${pageSize}`, `sort=${sortName},${sortDir}`]
+  for (const groupName of groups) params.push(`group=${groupName}`)
+  if (dateStart) params.push(`date_start=${dateStart.toISOString()}`)
+  if (dateEnd) params.push(`date_end=${dateEnd.toISOString()}`)
+  const url = `${BASE_URL}/solvedata?${params.join("&")}`
+  const response = await axios.get<GetSolveDataListResponse>(url, {
     headers: {
       Authorization: "bearer " + idToken
     }

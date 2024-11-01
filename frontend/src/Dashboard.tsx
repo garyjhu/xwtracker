@@ -7,8 +7,8 @@ import { useAuthenticatedUser } from "./hooks";
 import { isNyt } from "./predicates";
 import { SortDirection, SortName } from "./types";
 import SolveDataListOptions from "./SolveDataListOptions";
-import { getSelectedGroups } from "./tools";
 import GroupSelect from "./GroupSelect";
+import Calendar from "./Calendar";
 
 export interface DashboardState {
   page: number,
@@ -16,6 +16,8 @@ export interface DashboardState {
   sortBy: SortName,
   sortDir: SortDirection,
   selectedGroups: Set<string>
+  dateStart?: Date,
+  dateEnd?: Date
 }
 
 export type DashboardStateEventHandler = (partialState: Partial<DashboardState>) => void
@@ -44,9 +46,9 @@ export default function Dashboard() {
   const queryClient = useQueryClient()
 
   const { isPending, isError, data, error, fetchStatus } = useQuery({
-    queryKey: ["getSolveDataList", user.uid, state.page - 1, state.pageSize, state.sortBy, state.sortDir, [...state.selectedGroups]],
+    queryKey: ["getSolveDataList", user.uid, { ...state, selectedGroups: undefined }, [...state.selectedGroups]],
     queryFn: async () => {
-      const response = await fetchSolveDataList(user, state.page - 1, state.pageSize, state.sortBy, state.sortDir, [...state.selectedGroups])
+      const response = await fetchSolveDataList(user, state.page - 1, state.pageSize, state.sortBy, state.sortDir, state.selectedGroups, state.dateStart, state.dateEnd)
       response.content.forEach(solveData => {
         queryClient.setQueryData(["getSolveData", user.uid, { id: solveData.id }], solveData)
         queryClient.setQueryData(["getSolveData", user.uid, { puzzleId: solveData.puzzle.id }], solveData)
@@ -71,6 +73,7 @@ export default function Dashboard() {
 
   return (
     <>
+      <Calendar {...state} onChange={handleChange} />
       <GroupSelect {...state} allGroups={allGroups} onChange={handleChange} />
       <SolveDataListOptions {...state} onChange={handleChange} />
       <Stack>
