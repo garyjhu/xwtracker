@@ -1,13 +1,11 @@
-import styles from "./SolveDataListOptions.module.css";
-import { NativeSelect, SegmentedControl } from "@mantine/core";
+import { Group, SegmentedControl } from "@mantine/core";
 import { DashboardState, DashboardStateEventHandler } from "./Dashboard";
-import { ChangeEvent } from "react";
 
-type SolveDataListOptionsProps = Pick<DashboardState, "pageSize" | "sortBy" | "sortDir"> & {
+type SolveDataListOptionsProps = Pick<DashboardState, "sortBy" | "sortDir"> & {
   onChange: DashboardStateEventHandler
 }
 
-export default function SolveDataListOptions({ pageSize, sortBy, sortDir, onChange }: SolveDataListOptionsProps) {
+export default function SortOptions({ sortBy, sortDir, onChange }: SolveDataListOptionsProps) {
   const handleChangeSortBy = (value: string) => {
     if (value === "date" || value === "time") {
       onChange({
@@ -27,16 +25,9 @@ export default function SolveDataListOptions({ pageSize, sortBy, sortDir, onChan
     }
   }
 
-  const handleChangePageSize = (e: ChangeEvent<HTMLSelectElement>) => {
-    onChange({
-      page: 1,
-      pageSize: Number(e.target.value)
-    })
-  }
-
   return (
-    <div className={styles["list-options"]}>
-      <h4 className={styles["list-option-container"]}>
+    <Group gap={"2rem"}>
+      <Group>
         <span>Sort by:</span>
         <SegmentedControl
           value={sortBy}
@@ -46,8 +37,8 @@ export default function SolveDataListOptions({ pageSize, sortBy, sortDir, onChan
             { label: "solve time", value: "time" }
           ]}
         />
-      </h4>
-      <h4 className={styles["list-option-container"]}>
+      </Group>
+      <Group>
         <span>Order by:</span>
         <SegmentedControl
           value={sortDir}
@@ -57,17 +48,7 @@ export default function SolveDataListOptions({ pageSize, sortBy, sortDir, onChan
             { label: sortBy === "date" ? "newest first" : "slowest first", value: "desc" },
           ]}
         />
-      </h4>
-      <h4 className={styles["list-option-container"]}>
-        <span>Showing up to</span>
-        <NativeSelect
-          value={pageSize}
-          onChange={handleChangePageSize}
-          data={["5", "10", "25", "50", "100"]}
-          style={{ width: "4rem" }}
-        />
-        <span>puzzles per page</span>
-      </h4>
-    </div>
+      </Group>
+    </Group>
   )
 }

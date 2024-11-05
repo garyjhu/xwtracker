@@ -1,7 +1,7 @@
 import { DatePicker, DatePickerProps } from "@mantine/dates";
 import { useAuthenticatedUser } from "./hooks";
-import { useQuery } from "@tanstack/react-query";
-import { fetchSolveDataSummaryListOptions } from "./api";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { fetchSolveDataSummaryList } from "./api";
 import { DashboardState, DashboardStateEventHandler } from "./Dashboard";
 import { countSolvesBetweenDates } from "./tools";
 import dayjs from "dayjs";
@@ -16,15 +16,13 @@ export default function Calendar({ dateStart, selectedGroups, onChange }: Calend
   const user = useAuthenticatedUser()
   const theme = useMantineTheme()
 
-  const { isPending, isError, data: summaryList, error, fetchStatus } = useQuery(fetchSolveDataSummaryListOptions(user, [...selectedGroups]))
+  const { data: summaryList } = useQuery({
+    queryKey: ["getSolveDataSummaryList", user.uid, [...selectedGroups]],
+    queryFn: () => fetchSolveDataSummaryList(user, "date", "asc", selectedGroups),
+    placeholderData: keepPreviousData
+  })
 
-  if (isPending) {
-    return <span>Loading... {fetchStatus}</span>
-  }
-
-  if (isError) return <span>Error: {error.message}</span>
-
-  const getDayProps: DatePickerProps["getDayProps"] = (date) => {
+  const getDayProps: DatePickerProps["getDayProps"] = !summaryList ? undefined : (date) => {
     const numSolves = countSolvesBetweenDates(summaryList, date, dayjs(date).add(1, "day").toDate())
     const colorIndex = Math.min(numSolves - 1, 9)
     return {
@@ -57,6 +55,7 @@ export default function Calendar({ dateStart, selectedGroups, onChange }: Calend
       firstDayOfWeek={0}
       getDayProps={getDayProps}
       weekendDays={[]}
+      size={"xl"}
       value={dateStart ?? null}
       onChange={handleChange}
     />

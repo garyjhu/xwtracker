@@ -1,14 +1,25 @@
-import { Pagination, Stack } from "@mantine/core";
+import {
+  Alert,
+  Box,
+  Center,
+  Container,
+  Group,
+  LoadingOverlay,
+  Pagination,
+  Stack
+} from "@mantine/core";
 import SolveDataListItem from "./SolveDataListItem";
 import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchSolveDataList, fetchSolveGroups } from "./api";
 import { useAuthenticatedUser } from "./hooks";
 import { isNyt } from "./predicates";
 import { SortDirection, SortName } from "./types";
-import SolveDataListOptions from "./SolveDataListOptions";
+import SortOptions from "./SortOptions";
 import GroupSelect from "./GroupSelect";
 import Calendar from "./Calendar";
+import PaginationOptions from "./PaginationOptions";
+import { IconAlertTriangle } from "@tabler/icons-react";
 
 export interface DashboardState {
   page: number,
@@ -32,9 +43,9 @@ export default function Dashboard() {
   })
   const user = useAuthenticatedUser()
 
-  const { isPending: isPendingG, isError: isErrorG, data: allGroups, error: errorG, fetchStatus: fetchStatusG } = useQuery({
+  const { data: allGroups, isError: isErrorGroups } = useQuery({
     queryKey: ["fetchGroupNames", user.uid],
-    queryFn: async () => fetchSolveGroups(user)
+    queryFn: async () => fetchSolveGroups(user),
   })
 
   useEffect(() => {
@@ -45,7 +56,7 @@ export default function Dashboard() {
 
   const queryClient = useQueryClient()
 
-  const { isPending, isError, data, error, fetchStatus } = useQuery({
+  const { data, isError: isErrorData, isPlaceholderData } = useQuery({
     queryKey: ["getSolveDataList", user.uid, { ...state, selectedGroups: undefined }, [...state.selectedGroups]],
     queryFn: async () => {
       const response = await fetchSolveDataList(user, state.page - 1, state.pageSize, state.sortBy, state.sortDir, state.selectedGroups, state.dateStart, state.dateEnd)
@@ -57,29 +68,59 @@ export default function Dashboard() {
         }
       })
       return response
-    }
+    },
+    placeholderData: keepPreviousData
   })
 
-  if (isPending || isPendingG) {
-    return <span>Loading... {fetchStatus}</span>
-  }
-
-  if (isError) return <span>Error: {error.message}</span>
-  else if (isErrorG) return <span>Error: {errorG.message}</span>
-
-  const { content, totalPages } = data
+  const isError = isErrorGroups || isErrorData
+  const errorRefreshingMsg = "An error occurred while refreshing the data. The data currently displayed may be outdated. Please refresh the page."
+  const errorFetchingMsg = "An error occurred while fetching data. Please refresh the page."
 
   const handleChange = (partialState: Partial<DashboardState>) => setState({ ...state, ...partialState })
 
   return (
-    <>
-      <Calendar {...state} onChange={handleChange} />
-      <GroupSelect {...state} allGroups={allGroups} onChange={handleChange} />
-      <SolveDataListOptions {...state} onChange={handleChange} />
-      <Stack>
-        {content.map((solveData) => <SolveDataListItem solveData={solveData} key={solveData.id} />)}
-      </Stack>
-      <Pagination total={totalPages} value={state.page} onChange={(page) => setState({...state, page})} />
-    </>
+    <Stack>
+      <Container>
+        <Calendar {...state} onChange={handleChange} />
+      </Container>
+      <Group justify={"space-between"}>
+        <GroupSelect {...state} allGroups={allGroups ?? []} onChange={handleChange} />
+        <SortOptions {...state} onChange={handleChange} />
+      </Group>
+      <Box pos={"relative"}>
+        <LoadingOverlay visible={isPlaceholderData} loaderProps={{ type: "bars" }}/>
+        {isError && (
+          <Alert
+            variant={"light"}
+            color={"red.8"}
+            radius={"md"}
+            icon={<IconAlertTriangle />}
+            title={data ? errorRefreshingMsg : errorFetchingMsg}
+            styles={{
+              root: {
+                boxShadow: "var(--mantine-shadow-xs)"
+              },
+              title: {
+                fontSize: "var(--mantine-font-size-md)",
+              }
+            }}
+          >
+          </Alert>
+        )}
+        {data && (data.content.length === 0 ? (
+          <Center>
+            <span>No search results found.</span>
+          </Center>
+        ) : (
+          <Stack>
+            {data.content.map((solveData) => <SolveDataListItem solveData={solveData} key={solveData.id} />)}
+          </Stack>
+        ))}
+      </Box>
+      <Group justify={"space-between"}>
+        <PaginationOptions {...state} onChange={handleChange} />
+        {data && <Pagination total={data.totalPages} value={state.page} onChange={(page) => setState({...state, page})} />}
+      </Group>
+    </Stack>
   )
 }

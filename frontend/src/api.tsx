@@ -13,9 +13,9 @@ import { format } from "date-fns";
 
 const BASE_URL = "http://localhost:8080"
 
-export function fetchSolveDataSummaryListOptions(user: User, groups: string[]) {
+export function fetchSolveDataSummaryListOptions(user: User, groups: Iterable<string>) {
   return queryOptions({
-    queryKey: ["getSolveDataSummaryList", user.uid, groups],
+    queryKey: ["getSolveDataSummaryList", user.uid, [...groups]],
     queryFn: () => fetchSolveDataSummaryList(user, "date", "asc", groups)
   })
 }
@@ -78,11 +78,13 @@ export async function fetchSolveDataSummaryList(
   user: User,
   sortName: SortName,
   sortDir: SortDirection,
-  groups: string[]
+  groups: Iterable<string>
 ) {
   const idToken = await user.getIdToken(true)
-  const groupParams = groups.map(groupName => `&group=${groupName}`).join("")
-  const response = await axios.get<SolveDataSummary[]>(`${BASE_URL}/solvedata/summary?sort=${sortName},${sortDir}${groupParams}`, {
+  const params: string[] = [`sort=${sortName},${sortDir}`]
+  for (const groupName of groups) params.push(`group=${groupName}`)
+  const url = `${BASE_URL}/solvedata/summary?${params.join("&")}`
+  const response = await axios.get<SolveDataSummary[]>(url, {
     headers: {
       Authorization: "bearer " + idToken
     }

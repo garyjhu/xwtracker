@@ -95,7 +95,7 @@ export default function GroupSelect({ selectedGroups, allGroups, onChange }: Gro
         <PillsInput
           pointer
           onClick={() => combobox.toggleDropdown()}
-          style={{ width: 700 }}
+          style={{ flexGrow: 1 }}
         >
           <PillGroup>
             {selectedGroups.size > 0 ? allGroups

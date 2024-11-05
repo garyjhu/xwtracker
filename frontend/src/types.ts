@@ -56,12 +56,7 @@ export interface AuthContextValues {
 
 export interface GetSolveDataListResponse {
   content: SolveData[],
-  last: boolean,
   totalPages: number,
-  totalElements: number,
-  first: boolean,
-  size: number,
-  "number": number
 }
 
 export type SortName = "date" | "time"
