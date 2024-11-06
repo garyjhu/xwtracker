@@ -4,7 +4,7 @@ import { fetchSolveDataOptions } from "./api";
 import { useAuthenticatedUser } from "./hooks";
 import PuzzleGrid from "./PuzzleGrid";
 import { ImprovementGraph } from "./ImprovementGraph";
-import DistributionGraph from "./DistributionGraph";
+import DistributionGraph from "./DistributionGraph/DistributionGraph";
 import { AspectRatio, Center, Group, Stack } from "@mantine/core";
 
 export default function SolveDataPage() {

@@ -1,12 +1,10 @@
 import { SolveData } from "../types";
 import {
-  BarElement,
-  CategoryScale,
   Chart,
   LinearScale,
   LineController,
   LineElement,
-  PointElement,
+  PointElement, ScatterController,
   TimeScale
 } from "chart.js";
 import { useQuery } from "@tanstack/react-query";
@@ -42,7 +40,7 @@ export function ImprovementGraph({ solveGroup, solveData }: GraphProps) {
   useEffect(() => {
     if (!canvasRef.current || !solveDataSummaryList) return
 
-    Chart.register(LineController, PointElement, LineElement, LinearScale, CategoryScale, TimeScale, BarElement)
+    Chart.register(LineController, ScatterController, PointElement, LineElement, LinearScale, TimeScale)
     const data = getChartData(solveDataSummaryList, solveData)
     const options = getChartOptions(solveDataSummaryList, state => setTooltipState(state))
     chartRef.current = new Chart(canvasRef.current, { type: "line", data, options })

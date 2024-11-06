@@ -1,0 +1,1 @@
+export { getChartProps } from "./get-chart-props"
