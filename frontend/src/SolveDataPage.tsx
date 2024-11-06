@@ -3,8 +3,9 @@ import { useSearchParams } from "react-router-dom";
 import { fetchSolveDataOptions } from "./api";
 import { useAuthenticatedUser } from "./hooks";
 import PuzzleGrid from "./PuzzleGrid";
-import ImprovementGraph from "./ImprovementGraph";
+import { ImprovementGraph } from "./ImprovementGraph";
 import DistributionGraph from "./DistributionGraph";
+import { AspectRatio, Center, Group, Stack } from "@mantine/core";
 
 export default function SolveDataPage() {
   const [searchParams] = useSearchParams()
