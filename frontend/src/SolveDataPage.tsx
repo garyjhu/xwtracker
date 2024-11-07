@@ -10,8 +10,9 @@ import { AspectRatio, Center, Group, Stack } from "@mantine/core";
 export default function SolveDataPage() {
   const [searchParams] = useSearchParams()
   const searchKey = {
-    puzzleId: searchParams.get("id") || undefined,
-    nytPrintDate: searchParams.get("date") || undefined
+    id: searchParams.get("id") || undefined,
+    puzzleId: searchParams.get("puzzle_id") || undefined,
+    nytPrintDate: searchParams.get("nyt_print_date") || undefined
   }
 
   const user = useAuthenticatedUser()

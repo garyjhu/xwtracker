@@ -1,10 +1,10 @@
 import { ChartOptions } from "chart.js";
 import { formatSeconds } from "../../tools";
-import { getBarLabels } from "../get-bar-labels";
+import { getTicks } from "../get-ticks";
 import { Bin } from "d3-array";
 
 export function getChartOptions(bins: Bin<number, number>[]): ChartOptions<"bar">  {
-  const labels = getBarLabels(bins)
+  const ticks = getTicks(bins)
 
   return {
     plugins: {
@@ -15,7 +15,7 @@ export function getChartOptions(bins: Bin<number, number>[]): ChartOptions<"bar"
     scales: {
       x: {
         display: false,
-        max: labels[labels.length - 2],
+        max: ticks[ticks.length - 2],
       },
       x2: {
         display: true,
@@ -24,7 +24,7 @@ export function getChartOptions(bins: Bin<number, number>[]): ChartOptions<"bar"
         },
         offset: false,
         ticks: {
-          callback: (value) => formatSeconds(Number(labels[Number(value)]))
+          callback: (_, index) => formatSeconds(ticks[index] * 60)
         }
       },
       y: {

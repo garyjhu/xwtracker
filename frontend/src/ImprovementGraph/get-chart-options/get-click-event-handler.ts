@@ -1,0 +1,19 @@
+import { NavigateFunction } from "react-router-dom";
+import { MutableRefObject } from "react";
+import { ActiveElement, Chart, ChartEvent } from "chart.js";
+import { SolveDataSummary } from "../../types";
+
+export function getClickEventHandler(
+  solveDataSummaryList: SolveDataSummary[],
+  chartRef: MutableRefObject<Chart | null>,
+  navigate: NavigateFunction)
+{
+  return (event: ChartEvent, elements: ActiveElement[]) => {
+    if (!chartRef.current) return
+
+    elements.forEach(item => {
+      const solveDataId = solveDataSummaryList[item.index].id
+      navigate(`/puzzle?id=${solveDataId}`)
+    })
+  }
+}
