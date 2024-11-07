@@ -51,14 +51,9 @@ export function getChartOptions(
         title: {
           display: true,
           text: "Solve Time (minutes)",
-          font: {
-            size: 24,
-          }
         },
         ticks: {
-          font: {
-            size: 18,
-          }
+          precision: 0
         }
       }
     }

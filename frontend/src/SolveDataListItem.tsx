@@ -15,7 +15,7 @@ function SolveDataListItem({ solveData }: SolveDataListItemProps) {
 
   const handleClick = () => {
     if (isNyt(solveData.puzzle)) {
-      navigate(`/puzzle?date=${solveData.puzzle.nytPrintDate}`)
+      navigate(`/puzzle?nyt_print_date=${solveData.puzzle.nytPrintDate}`)
     }
     else {
       navigate(`/puzzle?id=${solveData.id}`)

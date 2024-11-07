@@ -28,7 +28,15 @@ export function getChartOptions(bins: Bin<number, number>[]): ChartOptions<"bar"
         }
       },
       y: {
-        beginAtZero: true
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Number of Puzzles"
+        },
+        ticks: {
+          autoSkip: false,
+          precision: 0
+        }
       }
     }
   }

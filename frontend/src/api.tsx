@@ -15,14 +15,14 @@ const BASE_URL = "http://localhost:8080"
 
 export function fetchSolveDataSummaryListOptions(user: User, groups: Iterable<string>) {
   return queryOptions({
-    queryKey: ["getSolveDataSummaryList", user.uid, [...groups]],
+    queryKey: ["fetchSolveDataSummaryList", user.uid, [...groups]],
     queryFn: () => fetchSolveDataSummaryList(user, "date", "asc", groups)
   })
 }
 
 export function fetchSolveDataOptions(user: User, key: SolveDataSearchKey) {
   return queryOptions({
-    queryKey: ["getSolveData", user.uid, key],
+    queryKey: ["fetchSolveData", user.uid, key],
     queryFn: () => fetchSolveData(user, key)
   })
 }

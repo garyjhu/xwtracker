@@ -13,6 +13,7 @@ import { getChartData } from "./get-chart-data";
 import { getChartOptions } from "./get-chart-options";
 import { binCached } from "./bin-cached";
 import { getBarBackgroundColor } from "./get-chart-data";
+import { Box } from "@mantine/core";
 
 
 interface GraphProps {
@@ -63,6 +64,8 @@ export default function DistributionGraph({ solveGroup, solveData }: GraphProps)
   if (isError) return <span>Error: {error.message}</span>
 
   return (
-    <canvas ref={canvasRef}></canvas>
+    <Box w={"100%"}>
+      <canvas ref={canvasRef}></canvas>
+    </Box>
   )
 }
