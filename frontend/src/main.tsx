@@ -5,14 +5,15 @@ import ReactDOM from "react-dom/client"
 import Root from "./Root"
 import { createTheme, MantineProvider } from "@mantine/core"
 import { RouterProvider, createBrowserRouter } from "react-router-dom"
-import Login from "./Login"
-import Signup from "./Signup"
+import Login from "./login/Login"
+import Signup from "./login/Signup"
 import Dashboard from "./Dashboard"
 import PrivateRoute from "./PrivateRoute";
 import Profile from "./Profile";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import SolveDataPage from "./SolveDataPage";
 import ErrorPage from "./ErrorPage";
+import ForgotPassword from "./login/ForgotPassword";
 
 const router = createBrowserRouter([
   {
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
       {
         path: "/signup",
         element: <Signup />
+      },
+      {
+        path: "/forgot_password",
+        element: <ForgotPassword />
       }
     ]
   },

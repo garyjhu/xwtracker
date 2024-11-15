@@ -1,4 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
+import { sendPasswordResetEmail } from "@firebase/auth";
 
 export interface Puzzle {
   id: string
@@ -51,6 +52,7 @@ export interface AuthContextValues {
   loading: boolean,
   createUser: (email: string, password: string) => ReturnType<typeof createUserWithEmailAndPassword>,
   logIn: (email: string, password: string) => ReturnType<typeof signInWithEmailAndPassword>,
+  resetPassword: (email: string) => ReturnType<typeof sendPasswordResetEmail>
   logOut: () => ReturnType<typeof signOut>
 }
 

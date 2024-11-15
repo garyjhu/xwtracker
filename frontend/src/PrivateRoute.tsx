@@ -1,13 +1,14 @@
 import { ReactNode, useContext } from "react";
 import { AuthContext } from "./AuthProvider";
 import { Navigate } from "react-router-dom";
+import { Loader } from "@mantine/core";
 
 export default function PrivateRoute({ children }: { children: ReactNode }) {
   const { loading, user } = useContext(AuthContext)
 
-  if (loading) return null
+  if (loading) return <Loader type={"bars"} />
 
-  if (user) return children
+  if (!user) return <Navigate to={"/login"} />
 
-  return <Navigate to={"/login"} />
+  return children
 }

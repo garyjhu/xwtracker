@@ -11,7 +11,7 @@ export default function HeaderLink({ label, onClick }: HeaderLinkProps) {
     <Button
       variant={"subtle"}
       onClick={onClick}
-      color={"dark"}
+      color={"dark.6"}
       size={"lg"}
     >
       {label}
