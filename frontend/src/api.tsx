@@ -2,30 +2,16 @@ import {
   GetSolveDataListResponse,
   SolveData,
   SolveDataSearchKey,
-  SolveDataSummary, SolveGroup,
+  SolveDataSummary,
+  SolveGroup,
   SortDirection,
   SortName
 } from "./types";
-import { queryOptions } from "@tanstack/react-query";
 import axios from "axios";
 import { User } from "firebase/auth";
 import { format } from "date-fns";
 
 const BASE_URL = "http://localhost:8080"
-
-export function fetchSolveDataSummaryListOptions(user: User, groups: Iterable<string>) {
-  return queryOptions({
-    queryKey: ["fetchSolveDataSummaryList", user.uid, [...groups]],
-    queryFn: () => fetchSolveDataSummaryList(user, "date", "asc", groups)
-  })
-}
-
-export function fetchSolveDataOptions(user: User, key: SolveDataSearchKey) {
-  return queryOptions({
-    queryKey: ["fetchSolveData", user.uid, key],
-    queryFn: () => fetchSolveData(user, key)
-  })
-}
 
 export async function fetchSolveData(user: User, key: SolveDataSearchKey) {
   const idToken = await user.getIdToken(true)

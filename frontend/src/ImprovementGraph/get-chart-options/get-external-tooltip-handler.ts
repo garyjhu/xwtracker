@@ -9,7 +9,6 @@ export function getExternalTooltipHandler(solveDataSummaryList: SolveDataSummary
     }
     else {
       const { offsetLeft: positionX, offsetTop: positionY } = chart.canvas
-      console.log(positionX, positionY, tooltip.caretX, tooltip.caretY)
       onChange({
         solveDataId: solveDataSummaryList[tooltip.dataPoints[0].dataIndex].id,
         style: {

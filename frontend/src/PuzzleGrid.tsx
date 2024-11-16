@@ -1,10 +1,9 @@
-import PuzzleCell from "./PuzzleCell"
-import { SolveData, SolveDataCell, SolveDataSearchKey } from "./types";
+import { SolveData, SolveDataSearchKey } from "./types";
 import parse, { attributesToProps, DOMNode, domToReact, Element } from "html-react-parser"
 import { useEffect, useRef, useState } from "react";
 import { isNyt } from "./predicates";
 import { useQuery } from "@tanstack/react-query";
-import { fetchSolveData, fetchSolveDataOptions } from "./api";
+import { fetchSolveData } from "./api";
 import { useAuthenticatedUser } from "./hooks";
 
 interface PuzzleGridProps {
@@ -89,16 +88,4 @@ export default function PuzzleGrid({ searchKey, solveData, showAnswers }: Puzzle
     }
     return parse(solveData.puzzle.svg, options)
   }
-  // const puzzleStyle = {
-  //   display: 'grid',
-  //   gridTemplateColumns: `repeat(${solveData.width}, 1fr)`,
-  //   gridTemplateRows: `repeat(${solveData.height}, 1fr)`,
-  //   gridGap: '1px',
-  //   border: '1px solid black'
-  // }
-  // return (
-  //   <div style={puzzleStyle}>
-  //     {solveData.cells.map((solveDataCell) => <PuzzleCell solveDataCell={solveDataCell} key={solveDataCell.id} />)}
-  //   </div>
-  // )
 }

@@ -8,7 +8,6 @@ import {
   TimeScale, Tooltip
 } from "chart.js";
 import { useQuery } from "@tanstack/react-query";
-import { fetchSolveDataSummaryListOptions } from "../api";
 import { useAuthenticatedUser } from "../hooks";
 import "chartjs-adapter-date-fns"
 import "date-fns"
@@ -18,6 +17,7 @@ import { getChartData, getScatterPointBackgroundColor } from "./get-chart-data";
 import { getChartOptions } from "./get-chart-options";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mantine/core";
+import { fetchSolveDataSummaryListOptions } from "../query-options";
 
 interface GraphProps {
   solveGroup: string,
