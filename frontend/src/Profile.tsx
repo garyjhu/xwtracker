@@ -31,7 +31,7 @@ export default function Profile() {
         "Content-Type": "application/json"
       }
     })
-    const firstNytPublishDate = new Date(2024, 8, 21)
+    const firstNytPublishDate = new Date(2023, 4, 1)
     let endDate = new Date()
     while (endDate >= firstNytPublishDate) {
       let startDate = startOfMonth(endDate)

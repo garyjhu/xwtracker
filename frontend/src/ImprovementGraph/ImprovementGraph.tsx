@@ -1,4 +1,4 @@
-import { SolveData } from "../types";
+import { SolveData, SolveDataSummary } from "../types";
 import {
   Chart, ChartDataset,
   LinearScale,
@@ -16,7 +16,7 @@ import ExternalTooltip from "./ExternalTooltip";
 import { getChartData, getScatterPointBackgroundColor } from "./get-chart-data";
 import { getChartOptions } from "./get-chart-options";
 import { useNavigate } from "react-router-dom";
-import { Box } from "@mantine/core";
+import { AspectRatio, Box } from "@mantine/core";
 import { fetchSolveDataSummaryListOptions } from "../query-options";
 
 interface GraphProps {
@@ -25,7 +25,7 @@ interface GraphProps {
 }
 
 export interface TooltipState {
-  solveDataId?: string,
+  solveDataSummary?: SolveDataSummary,
   style?: CSSProperties
 }
 
@@ -74,9 +74,11 @@ export function ImprovementGraph({ solveGroup, solveData }: GraphProps) {
   if (isError) return <span>Error: {error.message}</span>
 
   return (
-    <Box w={"100%"}>
-      <canvas ref={canvasRef}></canvas>
-      <ExternalTooltip {...tooltipState} />
-    </Box>
+    <AspectRatio ratio={2}>
+      <Box miw={0} mih={0} pos={"relative"}>
+        <canvas ref={canvasRef} style={{ cursor: "pointer" }}></canvas>
+        <ExternalTooltip {...tooltipState} w={"max(20%, 135px)"} />
+      </Box>
+    </AspectRatio>
   )
 }

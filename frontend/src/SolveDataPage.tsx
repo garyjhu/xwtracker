@@ -80,7 +80,7 @@ export default function SolveDataPage() {
                 </Box>
               )}
             </Stack>
-            <Stack flex={"4"}>
+            <Stack flex={"4"} miw={0}>
               <ImprovementGraph solveGroup={solveData.defaultGroup.name} solveData={solveData} />
               <DistributionGraph solveGroup={solveData.defaultGroup.name} solveData={solveData} />
             </Stack>
