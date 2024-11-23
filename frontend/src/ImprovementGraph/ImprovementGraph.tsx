@@ -1,7 +1,6 @@
 import { SolveData, SolveDataSummary } from "../types";
 import {
-  Chart, ChartDataset,
-  LinearScale,
+  Chart, LinearScale,
   LineController,
   LineElement,
   PointElement, ScatterController,

@@ -9,7 +9,7 @@ export function getExternalTooltipHandler(solveDataSummaryList: SolveDataSummary
       chart.canvas.style.cursor = "default"
     }
     else {
-      const { offsetLeft: positionX, offsetTop: positionY, height } = chart.canvas
+      const { offsetLeft: positionX, offsetTop: positionY } = chart.canvas
       onChange({
         solveDataSummary: solveDataSummaryList[tooltip.dataPoints[0].dataIndex],
         style: {

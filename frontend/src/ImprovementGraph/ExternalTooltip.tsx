@@ -1,4 +1,4 @@
-import { AspectRatio, Box, Center, Loader, LoadingOverlay, MantineStyleProps, Stack, Text } from "@mantine/core";
+import { AspectRatio, Box, Center, Loader, MantineStyleProps, Stack, Text } from "@mantine/core";
 import styles from "./Tooltip.module.css"
 import PuzzleGrid from "../PuzzleGrid";
 import { useQuery } from "@tanstack/react-query";
@@ -29,7 +29,7 @@ export default function ExternalTooltip({ solveDataSummary, style, w }: External
         <AspectRatio ratio={1} w={"100%"}>
           <Center>
             {solveData ? (
-              <PuzzleGrid searchKey={{ id: solveData.id }} solveData={solveData} />
+              <PuzzleGrid searchKey={{ id: solveData.id }} />
             ) : (
               <Loader color={"dark.8"} type={"bars"} />
             )}

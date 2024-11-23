@@ -1,14 +1,15 @@
-import { SolveData, SolveDataSearchKey } from "./types";
+import { SolveDataSearchKey } from "./types";
 import parse, { attributesToProps, DOMNode, domToReact, Element } from "html-react-parser"
 import { useEffect, useRef, useState } from "react";
 import { isNyt } from "./predicates";
 import { useQuery } from "@tanstack/react-query";
-import { fetchSolveData } from "./api";
 import { useAuthenticatedUser } from "./hooks";
+import { solveDataOptions } from "./query-options";
+import { IconAlertTriangle } from "@tabler/icons-react";
+import { Loader } from "@mantine/core";
 
 interface PuzzleGridProps {
   searchKey: SolveDataSearchKey
-  solveData?: SolveData,
   showAnswers?: boolean,
 }
 
@@ -26,17 +27,13 @@ const getRebusScalingFactors = (svg: SVGElement) => {
   return scalingFactors
 }
 
-export default function PuzzleGrid({ searchKey, solveData, showAnswers }: PuzzleGridProps) {
+export default function PuzzleGrid({ searchKey, showAnswers }: PuzzleGridProps) {
   const user = useAuthenticatedUser()
   const ref = useRef<SVGSVGElement>(null)
   const [scalingFactors, setScalingFactors] = useState<number[]>([])
   let rebus = false
 
-  const { isPending, isError, data, error, fetchStatus } = useQuery({
-    queryKey: ["getSolveData", user.uid, searchKey],
-    queryFn: () => fetchSolveData(user, searchKey),
-    initialData: solveData
-  })
+  const { data: solveData, isError } = useQuery(solveDataOptions(user, searchKey, false))
 
   useEffect(() => {
     if (showAnswers && ref.current != null && rebus) {
@@ -45,15 +42,10 @@ export default function PuzzleGrid({ searchKey, solveData, showAnswers }: Puzzle
     }
   }, [rebus, showAnswers])
 
-  if (isPending) {
-    return <span>Loading... {fetchStatus}</span>
-  }
+  if (isError) return <IconAlertTriangle />
+  if (!solveData) return <Loader type={"bars"} />
 
-  if (isError) return <span>Error: {error.message}</span>
-
-  solveData = data
   rebus = !solveData.cells.every(cell => !cell.guess || cell.guess.length <= 1)
-
 
   if (isNyt(solveData.puzzle)) {
     const replaceGuess = (index: number) => function replace(domNode: any) {

@@ -1,11 +1,22 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { fetchSolveData, fetchSolveDataSummaryList } from "./api";
 import { useAuthenticatedUser } from "./hooks";
 import PuzzleGrid from "./PuzzleGrid";
 import { ImprovementGraph } from "./ImprovementGraph";
 import DistributionGraph from "./DistributionGraph/DistributionGraph";
-import { AspectRatio, Box, Button, Center, Container, Group, Paper, Stack, Text } from "@mantine/core";
+import {
+  AspectRatio,
+  Box,
+  Button,
+  Center,
+  Group,
+  Loader,
+  LoadingOverlay,
+  Paper,
+  Stack,
+  Text,
+  Title
+} from "@mantine/core";
 import { formatDifference, formatSeconds, getTitle } from "./tools";
 import { IconCalendarTime, IconChevronLeft } from "@tabler/icons-react";
 import { solveDataOptions, solveTimesOptions, statsOptions } from "./query-options";
@@ -21,72 +32,84 @@ export default function SolveDataPage() {
   }
 
   const user = useAuthenticatedUser()
-  const { data: solveData, isError, error } = useQuery(solveDataOptions(user, searchKey, true))
-  const group = solveData?.defaultGroup.name
-  const { data: solveTimes } = useQuery(solveTimesOptions(user, group))
-  const { data: stats } = useQuery(statsOptions(user, group, solveTimes))
+  const { data: solveData, isFetching, isPlaceholderData, isError: isErrorData, error: errorData } = useQuery(solveDataOptions(user, searchKey, true))
+  const { data: solveTimes, isError: isErrorSolveTimes, error: errorSolveTimes } = useQuery(solveTimesOptions(user, solveData?.defaultGroup.name))
+  const { data: stats, isError: isErrorStats, error: errorStats } = useQuery(statsOptions(user, solveData?.defaultGroup.name, solveTimes))
+
+  if (isErrorData && !isFetching) throw errorData
+  if (isErrorSolveTimes) throw errorSolveTimes
+  if (isErrorStats) throw errorStats
+
+  if (!solveData || !solveTimes || !stats) return (
+    <Center>
+      <Loader type={"bars"} />
+    </Center>
+  )
+
+  const { date, time, defaultGroup: { name: group } } = solveData
+  const { median, min, percentile } = stats
+  const color = time <= median ? "green.6" : "red.6"
 
   return (
-    <>
+    <Box pos={"relative"}>
+      <LoadingOverlay visible={isPlaceholderData} loaderProps={{ type: "bars" }} />
       <Group>
         <Button pl={"xs"} onClick={() => navigate("/")}>
           <IconChevronLeft />
           <Text>Dashboard</Text>
         </Button>
-        <h1>{isError ? error.message : solveData && getTitle(solveData)}</h1>
+        <Title>{getTitle(solveData)}</Title>
       </Group>
-      { solveData && (
-        <>
-          <Group gap={"xs"} mb={"xs"}>
-            <IconCalendarTime />
-            <Text inline>{dayjs(solveData.date).format("dddd, MMMM D, YYYY h:ss A")}</Text>
-          </Group>
-          <Group align={"flex-start"}>
-            <AspectRatio ratio={1} flex={"4"}>
-              <PuzzleGrid searchKey={searchKey} solveData={solveData} showAnswers />
-            </AspectRatio>
-            <Stack flex={3}>
-              {stats && (
-                <Box>
-                  <Stack align={"center"} gap={"xs"}>
-                    <Paper withBorder shadow={"xs"} p={"xs"} w={"100%"}>
-                      <Stack align={"center"}>
-                        <Text size={"xl"}>Solve Time</Text>
-                        <Text fz={72} inline>{formatSeconds(solveData.time)}</Text>
-                      </Stack>
-                    </Paper>
-                    <Group w={"100%"} gap={"xs"}>
-                      <Paper withBorder shadow={"xs"} p={"xs"} flex={1}>
-                        <Stack align={"center"}>
-                          <Text>Median</Text>
-                          <Text fz={36} inline>{formatSeconds(stats.median)}</Text>
-                          <Text fz={24} inline>{formatDifference(solveData.time, stats.median)}</Text>
-                        </Stack>
-                      </Paper>
-                      <Paper withBorder shadow={"xs"} p={"xs"} flex={1}>
-                        <Stack align={"center"}>
-                          <Text>Best</Text>
-                          <Text fz={36} inline>{formatSeconds(stats.min)}</Text>
-                          <Text c={"dimmed"} fz={24} inline>{formatDifference(solveData.time, stats.min)}</Text>
-                        </Stack>
-                      </Paper>
-                    </Group>
-                    <Paper withBorder shadow={"xs"} p={"md"} w={"100%"}>
-                      <Text>
-                        You solved this puzzle faster than {stats.percentile(solveData.time)}% of {solveData.defaultGroup.name} puzzles.
-                      </Text>
-                    </Paper>
+      <Group gap={"xs"} mt={"xs"} mb={"xs"}>
+        <IconCalendarTime />
+        <Text inline>{dayjs(date).format("dddd, MMMM D, YYYY h:ss A")}</Text>
+      </Group>
+      <Group align={"flex-start"}>
+        <AspectRatio ratio={1} flex={"4"}>
+          <PuzzleGrid searchKey={searchKey} showAnswers />
+        </AspectRatio>
+        <Stack flex={3}>
+          <Box>
+            <Stack align={"center"} gap={"xs"}>
+              <Paper withBorder shadow={"xs"} p={"xs"} w={"100%"}>
+                <Stack align={"center"}>
+                  <Text size={"xl"}>Solve Time</Text>
+                  <Text fz={72} inline>{formatSeconds(time)}</Text>
+                </Stack>
+              </Paper>
+              <Group w={"100%"} gap={"xs"}>
+                <Paper withBorder shadow={"xs"} p={"xs"} flex={1}>
+                  <Stack align={"center"}>
+                    <Text>Median</Text>
+                    <Text fz={36} inline>{formatSeconds(median)}</Text>
+                    <Text c={color} fz={24} inline>{formatDifference(time, median)}</Text>
                   </Stack>
-                </Box>
-              )}
+                </Paper>
+                <Paper withBorder shadow={"xs"} p={"xs"} flex={1}>
+                  <Stack align={"center"}>
+                    <Text>Best</Text>
+                    <Text fz={36} inline>{formatSeconds(min)}</Text>
+                    <Text c={"dimmed"} fz={24} inline>{formatDifference(time, min)}</Text>
+                  </Stack>
+                </Paper>
+              </Group>
+              <Paper withBorder shadow={"xs"} p={"md"} w={"100%"}>
+                <Text>
+                  You solved this puzzle faster than{" "}
+                  <Text span c={color}>
+                    {percentile(time)}%
+                  </Text>
+                  {" "}of {group} puzzles.
+                </Text>
+              </Paper>
             </Stack>
-            <Stack flex={"4"} miw={0}>
-              <ImprovementGraph solveGroup={solveData.defaultGroup.name} solveData={solveData} />
-              <DistributionGraph solveGroup={solveData.defaultGroup.name} solveData={solveData} />
-            </Stack>
-          </Group>
-        </>
-      )}
-    </>
+          </Box>
+        </Stack>
+        <Stack flex={"4"} miw={0}>
+          <ImprovementGraph solveGroup={group} solveData={solveData} />
+          <DistributionGraph solveGroup={group} solveData={solveData} />
+        </Stack>
+      </Group>
+    </Box>
   )
 }
