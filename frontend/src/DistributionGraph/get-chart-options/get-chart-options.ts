@@ -24,7 +24,11 @@ export function getChartOptions(bins: Bin<number, number>[]): ChartOptions<"bar"
         },
         offset: false,
         ticks: {
-          callback: (_, index) => formatSeconds(ticks[index] * 60)
+          callback: (_, index) => {
+            if (index === 0) return formatSeconds(0)
+            if (index === ticks.length - 1) return ""
+            return formatSeconds(ticks[index] * 60)
+          }
         }
       },
       y: {

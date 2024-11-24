@@ -72,21 +72,21 @@ export default function SolveDataPage() {
           <Box>
             <Stack align={"center"} gap={"xs"}>
               <Paper withBorder shadow={"xs"} p={"xs"} w={"100%"}>
-                <Stack align={"center"}>
+                <Stack align={"center"} gap={"xs"}>
                   <Text size={"xl"}>Solve Time</Text>
                   <Text fz={72} inline>{formatSeconds(time)}</Text>
                 </Stack>
               </Paper>
               <Group w={"100%"} gap={"xs"}>
                 <Paper withBorder shadow={"xs"} p={"xs"} flex={1}>
-                  <Stack align={"center"}>
+                  <Stack align={"center"} gap={"xs"}>
                     <Text>Median</Text>
                     <Text fz={36} inline>{formatSeconds(median)}</Text>
                     <Text c={color} fz={24} inline>{formatDifference(time, median)}</Text>
                   </Stack>
                 </Paper>
                 <Paper withBorder shadow={"xs"} p={"xs"} flex={1}>
-                  <Stack align={"center"}>
+                  <Stack align={"center"} gap={"xs"}>
                     <Text>Best</Text>
                     <Text fz={36} inline>{formatSeconds(min)}</Text>
                     <Text c={"dimmed"} fz={24} inline>{formatDifference(time, min)}</Text>

@@ -42,9 +42,9 @@ export function getChartOptions(
     scales: {
       x: {
         type: "time",
-        time: {
-          unit: "month"
-        },
+        ticks: {
+          maxRotation: 0
+        }
       },
       y: {
         beginAtZero: true,
