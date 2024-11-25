@@ -98,3 +98,13 @@ export async function fetchSolveGroups(user: User) {
   })
   return response.data
 }
+
+export async function setCookie(user: User, cookie: string) {
+  const idToken = await user.getIdToken(true)
+  return await axios.put("http://localhost:8080/user/cookie", cookie, {
+    headers: {
+      Authorization: "bearer " + idToken,
+      "Content-Type": "application/json"
+    }
+  })
+}

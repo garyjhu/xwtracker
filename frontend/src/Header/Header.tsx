@@ -11,7 +11,13 @@ export default function Header() {
 
   return (
     <Group justify={"flex-end"} h={"100%"} pr={"md"}>
-      {user ? <HeaderLink label={"Log Out"} onClick={logOut} /> : (
+      {user ? (
+        <>
+          <HeaderLink label={"Dashboard"} onClick={() => navigate("/")} />
+          <HeaderLink label={"Profile"} onClick={() => navigate("/profile")} />
+          <HeaderLink label={"Log Out"} onClick={logOut} />
+        </>
+      ) : (
         <>
           <HeaderLink label={"Log In"} onClick={() => navigate("/login")} />
           <HeaderLink label={"Sign Up"} onClick={() => navigate("/signup")} />
