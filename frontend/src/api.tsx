@@ -105,3 +105,22 @@ export async function setCookie(user: User, cookie: string) {
     }
   })
 }
+
+export async function deleteSolveData(user: User, key: SolveDataSearchKey) {
+  const idToken = await user.getIdToken(true)
+  let url
+  if (key.puzzleId) {
+    url = `${BASE_URL}/solvedata?puzzle_id=${key.puzzleId}`
+  }
+  else if (key.nytPrintDate) {
+    url = `${BASE_URL}/nyt/solvedata?print_date=${key.nytPrintDate}`
+  }
+  else {
+    throw new Error("Solve data not found")
+  }
+  return await axios.delete<SolveData>(url, {
+    headers: {
+      Authorization: "bearer " + idToken
+    }
+  })
+}

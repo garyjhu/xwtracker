@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthenticatedUser } from "./hooks";
 import PuzzleGrid from "./PuzzleGrid";
@@ -21,6 +21,8 @@ import { formatDifference, formatSeconds, getTitle } from "./tools";
 import { IconCalendarTime, IconChevronLeft } from "@tabler/icons-react";
 import { solveDataOptions, solveTimesOptions, statsOptions } from "./query-options";
 import dayjs from "dayjs";
+import { deleteSolveData } from "./api";
+import { SolveDataSearchKey } from "./types";
 
 export default function SolveDataPage() {
   const navigate = useNavigate()
@@ -31,9 +33,15 @@ export default function SolveDataPage() {
   }
 
   const user = useAuthenticatedUser()
+  const queryClient = useQueryClient()
   const { data: solveData, isFetching, isPlaceholderData, isError: isErrorData, error: errorData } = useQuery(solveDataOptions(user, searchKey, true))
   const { data: solveTimes, isError: isErrorSolveTimes, error: errorSolveTimes } = useQuery(solveTimesOptions(user, solveData?.defaultGroup.name))
   const { data: stats, isError: isErrorStats, error: errorStats } = useQuery(statsOptions(user, solveData?.defaultGroup.name, solveTimes))
+
+  const mutation = useMutation({
+    mutationFn: (searchKey: SolveDataSearchKey) => deleteSolveData(user, searchKey),
+    onSuccess: () => queryClient.invalidateQueries()
+  })
 
   if (isErrorData && !isFetching) throw errorData
   if (isErrorSolveTimes) throw errorSolveTimes
@@ -48,6 +56,11 @@ export default function SolveDataPage() {
   const { date, time, defaultGroup: { name: group } } = solveData
   const { median, min, percentile } = stats
   const color = time <= median ? "green.6" : "red.6"
+
+  const handleDelete = () => {
+    mutation.mutate(searchKey)
+    navigate("/")
+  }
 
   return (
     <Box pos={"relative"}>
@@ -101,6 +114,9 @@ export default function SolveDataPage() {
                   {" "}of {group} puzzles.
                 </Text>
               </Paper>
+              <Button color={"red.8"} fullWidth onClick={handleDelete}>
+                Delete Puzzle
+              </Button>
             </Stack>
           </Box>
         </Stack>

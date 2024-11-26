@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,14 +36,13 @@ public class SolveDataController {
     }
 
     @GetMapping(value = "/solvedata", params = {"puzzle_id"})
-    public ResponseEntity<SolveData> getSolveData(Principal principal, @RequestParam(name = "puzzle_id") Long puzzleId) {
-        PuzzleTrackerUser user = userRepository.getReferenceById(principal.getName());
-        SolveData solveData = solveDataRepository.findByUserAndPuzzleId(user, puzzleId);
-        return ResponseEntity.ofNullable(solveData);
+    public ResponseEntity<SolveData> fetchSolveData(Principal principal, @RequestParam(name = "puzzle_id") Long puzzleId) {
+        Optional<SolveData> solveData = solveDataRepository.findById(new SolveDataId(puzzleId, principal.getName()));
+        return ResponseEntity.of(solveData);
     }
 
     @GetMapping(value = "/solvedata")
-    public ResponseEntity<Page<SolveData>> getSolveData(
+    public ResponseEntity<Page<SolveData>> fetchSolveData(
         Principal principal,
         @RequestParam("group") Optional<List<String>> groupNames,
         @RequestParam("date_start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Optional<Date> dateStart,
@@ -71,7 +71,7 @@ public class SolveDataController {
     }
 
     @GetMapping(value = "/solvedata/summary")
-    public ResponseEntity<List<SolveDataSummary>> getSolveDataByGroup(Principal principal, @RequestParam("group") Optional<List<String>> groupNames, Sort sort) {
+    public ResponseEntity<List<SolveDataSummary>> fetchSolveDataByGroup(Principal principal, @RequestParam("group") Optional<List<String>> groupNames, Sort sort) {
         PuzzleTrackerUser user = userRepository.getReferenceById(principal.getName());
         if (groupNames.isEmpty()) {
             List<SolveDataSummary> list = solveDataRepository.findSummaryByUser(user, sort);
@@ -83,6 +83,18 @@ public class SolveDataController {
                 .toList();
             List<SolveDataSummary> list = solveDataRepository.findSummaryByGroups(groups, sort);
             return ResponseEntity.ok(list);
+        }
+    }
+
+    @DeleteMapping(value = "/solvedata")
+    public ResponseEntity<Void> deleteSolveData(Principal principal, @RequestParam(name = "puzzle_id") Long puzzleId) {
+        Optional<SolveData> solveData = solveDataRepository.findById(new SolveDataId(puzzleId, principal.getName()));
+        if (solveData.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        else {
+            solveDataRepository.delete(solveData.get());
+            return ResponseEntity.noContent().build();
         }
     }
 }

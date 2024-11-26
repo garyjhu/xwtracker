@@ -12,8 +12,6 @@ import java.util.Date;
 import java.util.List;
 
 public interface SolveDataRepository extends JpaRepository<SolveData, SolveDataId> {
-    SolveData findByUserAndPuzzleId(PuzzleTrackerUser user, Long id);
-
     SolveData findByUserAndPuzzleNytId(PuzzleTrackerUser user, Long nytId);
 
     SolveData findByUserAndPuzzleNytPrintDate(PuzzleTrackerUser user, String nytPrintDate);

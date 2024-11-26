@@ -3,6 +3,7 @@ import binarySearch from "binary-search";
 import { Point } from "./types";
 
 export function getLineAnimations(data: Point[]): AnimationsSpec<"line"> {
+  if (data.length === 0) return {}
   const min = data[0].x
   const max = data[data.length - 1].x
   const factorToPoint = new Map<number, Point>()

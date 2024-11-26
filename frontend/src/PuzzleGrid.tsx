@@ -52,7 +52,7 @@ export default function PuzzleGrid({ searchKey, showAnswers }: PuzzleGridProps) 
       if (showAnswers && domNode instanceof Element && domNode.attribs.class === "guess") {
         const guess = solveData.cells[index].guess
         const props = attributesToProps(domNode.attribs)
-        return <text {...props} fontSize={Number(domNode.attribs.fontSize) * (scalingFactors[index] || 1)}>{guess}</text>
+        return <text {...props} fontSize={Number(domNode.attribs["font-size"]) * (scalingFactors[index] || 1)}>{guess}</text>
       }
     }
 

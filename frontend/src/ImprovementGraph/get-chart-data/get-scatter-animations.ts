@@ -2,6 +2,7 @@ import { AnimationsSpec, ScriptableContext } from "chart.js";
 import { Point } from "./types";
 
 export function getScatterAnimations(data: Point[]): AnimationsSpec<"line"> {
+  if (data.length === 0) return {}
   const min = data[0].x
   const max = data[data.length - 1].x
   const animations = (ctx: ScriptableContext<"scatter">) => {

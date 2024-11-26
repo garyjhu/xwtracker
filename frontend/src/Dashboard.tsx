@@ -112,7 +112,7 @@ export default function Dashboard() {
           </Center>
         ) : (
           <Stack>
-            {data.content.map((solveData) => <SolveDataListItem solveData={solveData} key={solveData.id} />)}
+            {data.content.map((solveData) => <SolveDataListItem solveData={solveData} key={solveData.puzzle.id} />)}
           </Stack>
         ))}
       </Box>

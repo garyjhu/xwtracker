@@ -13,7 +13,7 @@ import { getChartData } from "./get-chart-data";
 import { getChartOptions } from "./get-chart-options";
 import { binCached } from "./bin-cached";
 import { getBarBackgroundColor } from "./get-chart-data";
-import { AspectRatio, Box } from "@mantine/core";
+import { AspectRatio, Box, Center, Text } from "@mantine/core";
 
 
 interface GraphProps {
@@ -41,7 +41,7 @@ export default function DistributionGraph({ solveGroup, solveData }: GraphProps)
   }, [solveTimes]);
 
   useEffect(() => {
-    if (!canvasRef.current || !solveTimes) return
+    if (!canvasRef.current || !solveTimes || solveTimes.length < 2) return
 
     const bins = binCached(solveTimes)
     if (!chartRef.current) {
@@ -65,9 +65,17 @@ export default function DistributionGraph({ solveGroup, solveData }: GraphProps)
 
   return (
     <AspectRatio ratio={2}>
-      <Box miw={0} mih={0} pos={"relative"}>
-        <canvas ref={canvasRef}></canvas>
-      </Box>
+      {solveTimes.length < 2 ? (
+        <Center bd={"1px solid gray"}>
+          <Text>
+            Solve at least 2 {solveGroup} puzzles to view your solve time distribution.
+          </Text>
+        </Center>
+      ) : (
+        <Box miw={0} mih={0} pos={"relative"}>
+          <canvas ref={canvasRef}></canvas>
+        </Box>
+      )}
     </AspectRatio>
   )
 }

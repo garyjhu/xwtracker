@@ -15,7 +15,7 @@ import ExternalTooltip from "./ExternalTooltip";
 import { getChartData, getScatterPointBackgroundColor } from "./get-chart-data";
 import { getChartOptions } from "./get-chart-options";
 import { useNavigate } from "react-router-dom";
-import { AspectRatio, Box } from "@mantine/core";
+import { AspectRatio, Box, Center, Text } from "@mantine/core";
 import { fetchSolveDataSummaryListOptions } from "../query-options";
 
 interface GraphProps {
@@ -47,7 +47,7 @@ export function ImprovementGraph({ solveGroup, solveData }: GraphProps) {
   }, [solveDataSummaryList]);
 
   useEffect(() => {
-    if (!canvasRef.current || !solveDataSummaryList) return
+    if (!canvasRef.current || !solveDataSummaryList || solveDataSummaryList.length < 2) return
 
     if (!chartRef.current) {
       Chart.register(LineController, ScatterController, PointElement, LineElement, LinearScale, TimeScale, Tooltip)
@@ -74,10 +74,18 @@ export function ImprovementGraph({ solveGroup, solveData }: GraphProps) {
 
   return (
     <AspectRatio ratio={2}>
-      <Box miw={0} mih={0} pos={"relative"}>
-        <canvas ref={canvasRef} style={{ cursor: "pointer" }}></canvas>
-        <ExternalTooltip {...tooltipState} w={"max(20%, 135px)"} />
-      </Box>
+      {solveDataSummaryList.length < 2 ? (
+        <Center bd={"1px solid gray"}>
+          <Text>
+            Solve at least 2 {solveGroup} puzzles to view your improvement.
+          </Text>
+        </Center>
+      ) : (
+        <Box miw={0} mih={0} pos={"relative"}>
+          <canvas ref={canvasRef} style={{ cursor: "pointer" }}></canvas>
+          <ExternalTooltip {...tooltipState} w={"max(20%, 135px)"} />
+        </Box>
+      )}
     </AspectRatio>
   )
 }

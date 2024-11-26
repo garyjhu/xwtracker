@@ -23,7 +23,7 @@ export default function Profile() {
 
   const onSubmit = async (data: ProfileFormValues) => {
     await setCookie(user, data.cookie)
-    const firstNytPublishDate = new Date(2023, 4, 1)
+    const firstNytPublishDate = new Date(2024, 10, 1)
     let endDate = addDays(new Date(), 1)
     while (endDate >= firstNytPublishDate) {
       let startDate = startOfMonth(endDate)
