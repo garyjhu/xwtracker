@@ -16,10 +16,7 @@ const BASE_URL = "http://localhost:8080"
 export async function fetchSolveData(user: User, key: SolveDataSearchKey) {
   const idToken = await user.getIdToken(true)
   let url
-  if (key.id) {
-    url = `${BASE_URL}/solvedata?id=${key.id}`
-  }
-  else if (key.puzzleId) {
+  if (key.puzzleId) {
     url = `${BASE_URL}/solvedata?puzzle_id=${key.puzzleId}`
   }
   else if (key.nytPrintDate) {

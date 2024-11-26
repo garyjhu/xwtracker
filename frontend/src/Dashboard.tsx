@@ -61,7 +61,6 @@ export default function Dashboard() {
     queryFn: async () => {
       const response = await fetchSolveDataList(user, state.page - 1, state.pageSize, state.sortBy, state.sortDir, state.selectedGroups, state.dateStart, state.dateEnd)
       response.content.forEach(solveData => {
-        queryClient.setQueryData(["getSolveData", user.uid, { id: solveData.id }], solveData)
         queryClient.setQueryData(["getSolveData", user.uid, { puzzleId: solveData.puzzle.id }], solveData)
         if (isNyt(solveData.puzzle)) {
           queryClient.setQueryData(["getSolveData", user.uid, { nytPrintDate: solveData.puzzle.nytPrintDate }], solveData)

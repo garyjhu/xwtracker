@@ -3,7 +3,11 @@ package com.xwtracker.solvedata;
 import java.util.Date;
 
 public interface SolveDataSummary {
-    Long getId();
+    PuzzleId getPuzzle();
     Date getDate();
     Integer getTime();
+
+    public interface PuzzleId {
+        Long getId();
+    }
 }

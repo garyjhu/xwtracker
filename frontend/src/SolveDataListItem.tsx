@@ -1,4 +1,4 @@
-import { Box, Button, Center, Pill, PillGroup } from "@mantine/core";
+import { AspectRatio, Box, Button, Center, Pill, PillGroup } from "@mantine/core";
 import PuzzleGrid from "./PuzzleGrid";
 import {SolveData} from "./types";
 import styles from "./SolveDataListItem.module.css"
@@ -18,14 +18,14 @@ function SolveDataListItem({ solveData }: SolveDataListItemProps) {
       navigate(`/puzzle?nyt_print_date=${solveData.puzzle.nytPrintDate}`)
     }
     else {
-      navigate(`/puzzle?id=${solveData.id}`)
+      navigate(`/puzzle?puzzle_id=${solveData.puzzle.id}`)
     }
   }
 
   return (
     <Button className={styles.button} fullWidth onClick={handleClick}>
-      <Center className={styles["box-puzzle"]} inline>
-        <PuzzleGrid searchKey={{ puzzleId: solveData.puzzle.id }} solveData={solveData} />
+      <Center className={styles["box-puzzle"]}>
+        <PuzzleGrid searchKey={{ puzzleId: solveData.puzzle.id }} />
       </Center>
       <Box className={styles["box-info"]}>
         <h1 className={styles.title}>

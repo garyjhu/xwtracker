@@ -12,8 +12,8 @@ export function getClickEventHandler(
     if (!chartRef.current) return
 
     elements.forEach(item => {
-      const solveDataId = solveDataSummaryList[item.index].id
-      navigate(`/puzzle?id=${solveDataId}`)
+      const solveDataId = solveDataSummaryList[item.index].puzzle.id
+      navigate(`/puzzle?puzzle_id=${solveDataId}`)
     })
   }
 }

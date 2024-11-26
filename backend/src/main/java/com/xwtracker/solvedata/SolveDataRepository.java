@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Date;
 import java.util.List;
 
-public interface SolveDataRepository extends JpaRepository<SolveData, Long> {
+public interface SolveDataRepository extends JpaRepository<SolveData, SolveDataId> {
     SolveData findByUserAndPuzzleId(PuzzleTrackerUser user, Long id);
 
     SolveData findByUserAndPuzzleNytId(PuzzleTrackerUser user, Long nytId);

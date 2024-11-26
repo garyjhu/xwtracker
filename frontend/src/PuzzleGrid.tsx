@@ -43,7 +43,7 @@ export default function PuzzleGrid({ searchKey, showAnswers }: PuzzleGridProps) 
   }, [rebus, showAnswers])
 
   if (isError) return <IconAlertTriangle />
-  if (!solveData) return <Loader type={"bars"} />
+  if (!solveData) return <Loader color={"dark.8"} type={"bars"} />
 
   rebus = !solveData.cells.every(cell => !cell.guess || cell.guess.length <= 1)
 
@@ -61,7 +61,7 @@ export default function PuzzleGrid({ searchKey, showAnswers }: PuzzleGridProps) 
         if (domNode instanceof Element && domNode.name === "svg") {
           const props = attributesToProps(domNode.attribs)
           return (
-            <svg {...props} ref={ref} visibility={!showAnswers || !rebus || scalingFactors.length ? "visible" : "hidden"}>
+            <svg {...props} ref={ref} visibility={!showAnswers || !rebus || scalingFactors.length ? "visible" : "hidden"} height={"100%"}>
               {domToReact(domNode.children as DOMNode[], options)}
             </svg>
           )

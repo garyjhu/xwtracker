@@ -9,15 +9,14 @@ import jakarta.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(indexes = {@Index(columnList = "user_uid, puzzle_id", unique = true)})
+@IdClass(SolveDataId.class)
 public class SolveData {
     @Id
-    @GeneratedValue
-    private Long id;
     @ManyToOne
     @JoinColumn(name = "user_uid", nullable = false)
     @JsonIgnore
     private PuzzleTrackerUser user;
+    @Id
     @ManyToOne
     @JoinColumn(name = "puzzle_id", nullable = false)
     private Puzzle puzzle;
@@ -29,10 +28,6 @@ public class SolveData {
     private List<Cell> cells = new ArrayList<>();
     private Integer time;
     private Date date;
-
-    public Long getId() {
-        return id;
-    }
 
     public PuzzleTrackerUser getUser() {
         return user;

@@ -11,7 +11,7 @@ public class SolveGroup {
     private String name;
     @Id
     @ManyToOne
-    @JoinColumn(name = "solver_uid", nullable = false)
+    @JoinColumn(name = "user_uid", nullable = false)
     @JsonIgnore
     private PuzzleTrackerUser user;
     private String color;

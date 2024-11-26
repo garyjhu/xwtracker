@@ -34,12 +34,6 @@ public class SolveDataController {
         this.solveGroupRepository = solveGroupRepository;
     }
 
-    @GetMapping(value = "/solvedata", params = {"id"})
-    public ResponseEntity<SolveData> getSolveData(@RequestParam Long id) {
-        Optional<SolveData> solveData = solveDataRepository.findById(id);
-        return ResponseEntity.of(solveData);
-    }
-
     @GetMapping(value = "/solvedata", params = {"puzzle_id"})
     public ResponseEntity<SolveData> getSolveData(Principal principal, @RequestParam(name = "puzzle_id") Long puzzleId) {
         PuzzleTrackerUser user = userRepository.getReferenceById(principal.getName());

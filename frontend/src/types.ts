@@ -13,7 +13,6 @@ export interface NytPuzzle extends Puzzle {
 }
 
 export interface SolveData {
-  id: string,
   cells: SolveDataCell[],
   height: number,
   width: number,
@@ -36,13 +35,12 @@ export interface SolveGroup {
 }
 
 export type SolveDataSearchKey = {
-  id?: string,
   puzzleId?: string,
   nytPrintDate?: string
 }
 
 export interface SolveDataSummary {
-  id: string,
+  puzzle: { id: string }
   time: number,
   date: Date
 }

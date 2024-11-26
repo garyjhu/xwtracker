@@ -26,7 +26,6 @@ export default function SolveDataPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const searchKey = {
-    id: searchParams.get("id") || undefined,
     puzzleId: searchParams.get("puzzle_id") || undefined,
     nytPrintDate: searchParams.get("nyt_print_date") || undefined
   }
