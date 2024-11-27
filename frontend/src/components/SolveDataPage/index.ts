@@ -1,0 +1,1 @@
+export { SolveDataPage } from "./SolveDataPage"

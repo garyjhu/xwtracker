@@ -1,4 +1,4 @@
-import { bisectLeft, bisectRight, mean, quantileSorted } from "d3-array";
+import { bisectLeft, mean, quantileSorted } from "d3-array";
 
 interface SolveGroupStats {
   count: number,

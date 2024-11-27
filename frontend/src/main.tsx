@@ -1,19 +1,17 @@
-import '@mantine/core/styles.css'
-import '@mantine/dates/styles.css'
 import React from "react"
 import ReactDOM from "react-dom/client"
-import Root from "./Root"
+import "@mantine/core/styles.css"
+import "@mantine/dates/styles.css"
 import { createTheme, MantineProvider } from "@mantine/core"
-import { RouterProvider, createBrowserRouter } from "react-router-dom"
-import Login from "./login/Login"
-import Signup from "./login/Signup"
-import Dashboard from "./Dashboard"
-import PrivateRoute from "./PrivateRoute";
-import Profile from "./Profile";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import SolveDataPage from "./SolveDataPage";
-import ErrorPage from "./ErrorPage";
-import ForgotPassword from "./login/ForgotPassword";
+import { RouterProvider, createBrowserRouter } from "react-router-dom"
+import { SolveDataPage } from "./components/SolveDataPage";
+import { ForgotPassword, Login, Signup } from "./components/login";
+import { ErrorPage } from "./components/ErrorPage";
+import { Root } from "./components/Root"
+import { Dashboard } from "./components/Dashboard"
+import { PrivateRoute } from "./components/auth/PrivateRoute";
+import { Profile } from "./components/Profile";
 
 const router = createBrowserRouter([
   {
