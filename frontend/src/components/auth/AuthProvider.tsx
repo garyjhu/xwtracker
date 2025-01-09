@@ -2,11 +2,11 @@ import { ReactNode, useEffect, useState } from "react";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
   User
 } from "firebase/auth"
-import { sendPasswordResetEmail } from "@firebase/auth";
 import { auth, AuthContext } from "../../auth";
 
 interface AuthState {

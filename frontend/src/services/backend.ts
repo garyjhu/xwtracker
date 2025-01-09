@@ -11,7 +11,7 @@ import axios from "axios";
 import { User } from "firebase/auth";
 import { format } from "date-fns";
 
-const BASE_URL = "http://localhost:8080"
+const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL
 
 export async function fetchSolveData(user: User, key: SolveDataSearchKey) {
   const idToken = await user.getIdToken(true)
@@ -98,7 +98,7 @@ export async function fetchSolveGroups(user: User) {
 
 export async function setCookie(user: User, cookie: string) {
   const idToken = await user.getIdToken(true)
-  return await axios.put("http://localhost:8080/user/cookie", cookie, {
+  return await axios.put(`${BASE_URL}/user/cookie`, cookie, {
     headers: {
       Authorization: "bearer " + idToken,
       "Content-Type": "application/json"

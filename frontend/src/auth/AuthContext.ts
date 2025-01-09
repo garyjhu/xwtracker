@@ -1,8 +1,7 @@
 import { createContext } from "react";
 import { AuthContextValues } from "../utils/types";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "./firebase-config";
-import { sendPasswordResetEmail } from "@firebase/auth";
 
 export const AuthContext = createContext<AuthContextValues>({
   user: null,

@@ -1,22 +1,21 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const env = import.meta.env
+
 const firebaseConfig = {
-  apiKey: "AIzaSyBWNhgEH2FIZO4mpn8KEaPbLvKDJr1qL78",
-  authDomain: "xwtracker.firebaseapp.com",
-  projectId: "xwtracker",
-  storageBucket: "xwtracker.appspot.com",
-  messagingSenderId: "602884172081",
-  appId: "1:602884172081:web:49261bdc49a5a1ad2f6810",
-  measurementId: "G-QGQ5K85BS9"
+  apiKey: env.VITE_API_KEY,
+  authDomain: env.VITE_AUTH_DOMAIN,
+  projectId: env.VITE_PROJECT_ID,
+  storageBucket: env.VITE_STORAGE_BUCKET,
+  messagingSenderId: env.VITE_MESSAGING_SENDER_ID,
+  appId: env.VITE_APP_ID,
+  measurementId: env.VITE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-initializeApp(firebaseConfig);
-export const auth = getAuth()
-connectAuthEmulator(auth, "http://localhost:9099")
+const firebaseApp = initializeApp(firebaseConfig);
+export const auth = getAuth(firebaseApp)
+
+if (env.DEV) {
+  connectAuthEmulator(auth, "http://localhost:9099")
+}

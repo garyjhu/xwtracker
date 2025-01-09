@@ -1,5 +1,4 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
-import { sendPasswordResetEmail } from "@firebase/auth";
+import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
 
 export interface Puzzle {
   id: string
