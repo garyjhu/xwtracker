@@ -4,19 +4,18 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.xwtracker.security.FirebaseTokenAuthenticationFilter;
 import com.xwtracker.security.UserCreationFilter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -33,11 +32,11 @@ public class PuzzleTrackerApplication {
     @EnableWebSecurity
     public static class SecurityConfiguration {
         private final UserCreationFilter userCreationFilter;
-        private final FirebaseTokenAuthenticationFilter tokenAuthenticationFilter;
+        private final AuthenticationManager authenticationManager;
 
-        public SecurityConfiguration(UserCreationFilter userCreationFilter, FirebaseTokenAuthenticationFilter tokenAuthenticationFilter) {
+        public SecurityConfiguration(UserCreationFilter userCreationFilter, AuthenticationManager authenticationManager) {
             this.userCreationFilter = userCreationFilter;
-            this.tokenAuthenticationFilter = tokenAuthenticationFilter;
+            this.authenticationManager = authenticationManager;
         }
 
         @Bean
@@ -47,14 +46,16 @@ public class PuzzleTrackerApplication {
                 .authorizeHttpRequests(authorize -> authorize
                     .anyRequest().authenticated()
                 )
-                .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .oauth2ResourceServer(oauth2 -> oauth2
+                    .authenticationManagerResolver(request -> authenticationManager)
+                )
                 .addFilterBefore(userCreationFilter, AuthorizationFilter.class);
             return http.build();
         }
     }
 
     @Configuration
-    public static class WebConfiguration implements WebMvcConfigurer{
+    public static class WebConfiguration implements WebMvcConfigurer {
         @Override
         public void addCorsMappings(CorsRegistry registry) {
             registry
