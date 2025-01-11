@@ -7,6 +7,7 @@ import com.xwtracker.solvegroup.SolveGroupRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedModel;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,7 +43,7 @@ public class SolveDataController {
     }
 
     @GetMapping(value = "/solvedata")
-    public ResponseEntity<Page<SolveData>> fetchSolveData(
+    public ResponseEntity<PagedModel<SolveData>> fetchSolveData(
         Principal principal,
         @RequestParam("group") Optional<List<String>> groupNames,
         @RequestParam("date_start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Optional<Date> dateStart,
@@ -57,7 +58,7 @@ public class SolveDataController {
             Page<SolveData> page = useDateRange
                 ? solveDataRepository.findByUserAndDateBetween(user, start, end, pageable)
                 : solveDataRepository.findByUser(user, pageable);
-            return ResponseEntity.ok(page);
+            return ResponseEntity.ok(new PagedModel<>(page));
         }
         else {
             List<SolveGroup> groups = groupNames.get().stream()
@@ -66,7 +67,7 @@ public class SolveDataController {
             Page<SolveData> page = useDateRange
                 ? solveDataRepository.findByGroupsAndDateBetween(groups, start, end, pageable)
                 : solveDataRepository.findByGroups(groups, pageable);
-            return ResponseEntity.ok(page);
+            return ResponseEntity.ok(new PagedModel<>(page));
         }
     }
 

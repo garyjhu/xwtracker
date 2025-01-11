@@ -118,7 +118,7 @@ export function Dashboard() {
       </Box>
       <Group justify={"space-between"}>
         <PaginationOptions {...state} onChange={handleChange} />
-        {data && <Pagination total={data.totalPages} value={state.page} onChange={(page) => setState({...state, page})} />}
+        {data && <Pagination total={data.page.totalPages} value={state.page} onChange={(page) => setState({...state, page})} />}
       </Group>
     </Stack>
   )
