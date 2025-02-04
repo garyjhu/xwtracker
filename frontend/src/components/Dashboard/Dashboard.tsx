@@ -1,5 +1,4 @@
 import {
-  Alert,
   Box,
   Center,
   Container,
@@ -20,6 +19,8 @@ import GroupSelect from "./GroupSelect";
 import Calendar from "./Calendar";
 import PaginationOptions from "./PaginationOptions";
 import { IconAlertTriangle } from "@tabler/icons-react";
+import { DashboardBanner } from "./DashboardBanner.js";
+import { ArchiveFetchingBanner } from "./ArchiveFetchingBanner.js";
 
 export interface DashboardState {
   page: number,
@@ -88,23 +89,9 @@ export function Dashboard() {
       </Group>
       <Box pos={"relative"}>
         <LoadingOverlay visible={isPlaceholderData} loaderProps={{ type: "bars" }}/>
+        <ArchiveFetchingBanner />
         {isError && (
-          <Alert
-            variant={"light"}
-            color={"red.8"}
-            radius={"md"}
-            icon={<IconAlertTriangle />}
-            title={data ? errorRefreshingMsg : errorFetchingMsg}
-            styles={{
-              root: {
-                boxShadow: "var(--mantine-shadow-xs)"
-              },
-              title: {
-                fontSize: "var(--mantine-font-size-md)",
-              }
-            }}
-          >
-          </Alert>
+          <DashboardBanner color={"red.8"} icon={<IconAlertTriangle />} title={data ? errorRefreshingMsg : errorFetchingMsg} />
         )}
         {data && (data.content.length === 0 ? (
           <Center>

@@ -3,7 +3,6 @@ package com.xwtracker.nyt.service;
 import com.xwtracker.nyt.puzzle.NytPuzzle;
 import com.xwtracker.nyt.service.archiveresults.NytArchiveResults;
 import com.xwtracker.nyt.solvedata.NytSolveData;
-import com.xwtracker.puzzletrackeruser.PuzzleTrackerUser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +47,7 @@ public class NytService {
         String publishType,
         String dateStart,
         String dateEnd,
-        PuzzleTrackerUser user
+        String cookie
     ) {
         ResponseEntity<NytArchiveResults> response = restClient.get()
             .uri(uriBuilder -> uriBuilder
@@ -59,7 +58,7 @@ public class NytService {
                 .queryParam("date_start", dateStart)
                 .queryParam("date_end", dateEnd)
                 .build())
-            .header("Cookie", "NYT-S=" + user.getNytSCookie())
+            .header("Cookie", "NYT-S=" + cookie)
             .retrieve()
             .toEntity(NytArchiveResults.class);
         return CompletableFuture.completedFuture(response.getBody());
@@ -69,11 +68,11 @@ public class NytService {
     public CompletableFuture<NytPuzzle> fetchPuzzleFromArchive(
         String publishType,
         String date,
-        PuzzleTrackerUser user
+        String cookie
     ) {
         ResponseEntity<NytPuzzle> response = restClient.get()
             .uri("v6/puzzle/" + publishType + "/" + date + ".json")
-            .header("Cookie", "NYT-S=" + user.getNytSCookie())
+            .header("Cookie", "NYT-S=" + cookie)
             .retrieve()
             .toEntity(NytPuzzle.class);
         return CompletableFuture.completedFuture(response.getBody());
@@ -82,11 +81,11 @@ public class NytService {
     @Async
     public CompletableFuture<NytSolveData> fetchSolveDataFromArchive(
         Long puzzleID,
-        PuzzleTrackerUser user
+        String cookie
     ) {
         ResponseEntity<NytSolveData> response = restClient.get()
             .uri("v6/game/" + puzzleID + ".json")
-            .header("Cookie", "NYT-S=" + user.getNytSCookie())
+            .header("Cookie", "NYT-S=" + cookie)
             .retrieve()
             .toEntity(NytSolveData.class);
         return CompletableFuture.completedFuture(response.getBody());

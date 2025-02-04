@@ -33,34 +33,35 @@ public class NytArchiveEntryService {
         this.solveGroupService = solveGroupService;
     }
 
-    public CompletableFuture<Void> updateNytPuzzleAndSolveData(NytArchiveEntry archiveEntry, PuzzleTrackerUser user) {
-        return getNytPuzzle(archiveEntry, user)
-            .thenAcceptBoth(getNytSolveData(archiveEntry, user), ((nytPuzzle, nytSolveData) -> {
-                if (puzzleRepository.findByNytId(archiveEntry.getPuzzleID()) == null) {
-                    nytPuzzle = puzzleRepository.save(nytPuzzle);
-                }
+    public CompletableFuture<NytSolveData> updateNytPuzzleAndSolveData(NytArchiveEntry archiveEntry, PuzzleTrackerUser user) {
+        CompletableFuture<NytPuzzle> nytPuzzleFuture = getNytPuzzle(archiveEntry, user);
+        CompletableFuture<NytSolveData> nytSolveDataFuture = getNytSolveData(archiveEntry, user);
+        return nytSolveDataFuture
+            .thenApply(nytSolveData -> {
+                NytPuzzle nytPuzzle = nytPuzzleFuture.join();
                 if (solveDataRepository.findByUserAndPuzzleNytId(user, archiveEntry.getPuzzleID()) == null) {
                     nytSolveData.setUser(user);
                     nytSolveData.setPuzzle(nytPuzzle);
                     SolveGroup nytSolveGroup = solveGroupService.getNytSolveGroupFromPrintDate(archiveEntry.getPrintDate(), user);
                     nytSolveData.getGroups().add(nytSolveGroup);
                     nytSolveData.setDefaultGroup(nytSolveGroup);
-                    solveDataRepository.save(nytSolveData);
+                    return nytSolveData;
                 }
-            }));
+                else return null;
+            });
     }
 
     private CompletableFuture<NytPuzzle> getNytPuzzle(NytArchiveEntry archiveEntry, PuzzleTrackerUser user) {
         Puzzle searchResult = puzzleRepository.findByNytId(archiveEntry.getPuzzleID());
         return searchResult == null
-            ? nytService.fetchPuzzleFromArchive(archiveEntry.getPublishType(), archiveEntry.getPrintDate(), user)
+            ? nytService.fetchPuzzleFromArchive(archiveEntry.getPublishType(), archiveEntry.getPrintDate(), user.getCookie())
             : CompletableFuture.completedFuture((NytPuzzle) searchResult);
     }
 
     private CompletableFuture<NytSolveData> getNytSolveData(NytArchiveEntry archiveEntry, PuzzleTrackerUser user) {
         SolveData searchResult = solveDataRepository.findByUserAndPuzzleNytId(user, archiveEntry.getPuzzleID());
         return searchResult == null
-            ? nytService.fetchSolveDataFromArchive(archiveEntry.getPuzzleID(), user)
+            ? nytService.fetchSolveDataFromArchive(archiveEntry.getPuzzleID(), user.getCookie())
             : CompletableFuture.completedFuture((NytSolveData) searchResult);
     }
 }

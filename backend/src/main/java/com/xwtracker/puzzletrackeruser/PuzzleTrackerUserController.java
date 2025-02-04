@@ -16,9 +16,9 @@ public class PuzzleTrackerUserController {
     }
 
     @PutMapping("/user/cookie")
-    public ResponseEntity<Void> setNytSCookie(Principal principal, @RequestBody String nytSCookie) {
+    public ResponseEntity<Void> setNytSCookie(Principal principal, @RequestBody String cookie) {
         PuzzleTrackerUser user = userRepository.getReferenceById(principal.getName());
-        user.setNytSCookie(nytSCookie);
+        user.setCookie(cookie);
         userRepository.save(user);
         return ResponseEntity.ok().build();
     }

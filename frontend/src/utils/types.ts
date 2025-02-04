@@ -61,3 +61,8 @@ export interface GetSolveDataListResponse {
 export type SortName = "date" | "time"
 
 export type SortDirection = "asc" | "desc"
+
+export interface JobStatus {
+  isComplete: boolean,
+  puzzlesFetched: number
+}

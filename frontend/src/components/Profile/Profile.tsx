@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Anchor, Button, Container, Group, Text, TextInput, Title } from "@mantine/core";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { setCookie, updateNytSolveData } from "../../services/backend";
-import { addDays, startOfMonth } from "date-fns";
+import { addDays } from "date-fns";
 import { useAuthenticatedUser } from "../../auth";
 
 interface ProfileFormValues {
@@ -18,18 +18,14 @@ export function Profile() {
 
   const mutation = useMutation({
     mutationFn: ({ startDate, endDate }: { startDate: Date, endDate: Date }) => updateNytSolveData(user, startDate, endDate),
-    onSuccess: () => queryClient.invalidateQueries()
+    onSuccess: () => void queryClient.invalidateQueries()
   })
 
   const onSubmit = async (data: ProfileFormValues) => {
     await setCookie(user, data.cookie)
-    const firstNytPublishDate = new Date(2024, 10, 1)
+    const firstNytPublishDate = new Date(2022, 10, 21)
     let endDate = addDays(new Date(), 1)
-    while (endDate >= firstNytPublishDate) {
-      let startDate = startOfMonth(endDate)
-      mutation.mutate({ startDate, endDate })
-      endDate = addDays(startDate, -1)
-    }
+    mutation.mutate({ startDate: firstNytPublishDate, endDate })
     navigate("/")
   }
 

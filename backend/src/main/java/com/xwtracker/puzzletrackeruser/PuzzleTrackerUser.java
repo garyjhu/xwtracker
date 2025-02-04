@@ -10,7 +10,7 @@ import java.util.List;
 public class PuzzleTrackerUser {
     @Id
     private String uid;
-    private String nytSCookie;
+    private String cookie;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<SolveGroup> solveGroups = new ArrayList<>();
 
@@ -24,12 +24,12 @@ public class PuzzleTrackerUser {
         return uid;
     }
 
-    public String getNytSCookie() {
-        return nytSCookie;
+    public String getCookie() {
+        return cookie;
     }
 
-    public void setNytSCookie(String nytSCookie) {
-        this.nytSCookie = nytSCookie;
+    public void setCookie(String cookie) {
+        this.cookie = cookie;
     }
 
     public List<SolveGroup> getSolveGroups() {

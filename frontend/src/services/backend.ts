@@ -1,5 +1,5 @@
 import {
-  GetSolveDataListResponse,
+  GetSolveDataListResponse, JobStatus,
   SolveData,
   SolveDataSearchKey,
   SolveDataSummary,
@@ -79,7 +79,26 @@ export async function updateNytSolveData(user: User, startDate: Date, endDate: D
   const idToken = await user.getIdToken(true)
   const startDateFormatted = format(startDate, "yyyy-MM-dd")
   const endDateFormatted = format(endDate, "yyyy-MM-dd")
-  return await axios.post(`${BASE_URL}/nyt?dateStart=${startDateFormatted}&dateEnd=${endDateFormatted}`, null, {
+  return await axios.put(`${BASE_URL}/nyt?dateStart=${startDateFormatted}&dateEnd=${endDateFormatted}`, null, {
+    headers: {
+      Authorization: "bearer " + idToken
+    }
+  })
+}
+
+export async function checkJobStatus(user: User) {
+  const idToken = await user.getIdToken(true)
+  const response = await axios.get<JobStatus | "">(`${BASE_URL}/nyt`, {
+    headers: {
+      Authorization: "bearer " + idToken
+    }
+  })
+  return response.data || null
+}
+
+export async function deleteJob(user: User) {
+  const idToken = await user.getIdToken(true)
+  await axios.delete(`${BASE_URL}/nyt`, {
     headers: {
       Authorization: "bearer " + idToken
     }
