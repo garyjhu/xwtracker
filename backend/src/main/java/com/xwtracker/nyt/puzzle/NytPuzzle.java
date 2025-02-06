@@ -9,7 +9,7 @@ import jakarta.persistence.Entity;
 @JsonDeserialize(using = NytPuzzleDeserializer.class)
 public class NytPuzzle extends Puzzle {
     private String editor;
-    @Column(length = 100000)
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String svg;
 
     public String getEditor() {

@@ -24,8 +24,6 @@ public class SolveData {
     private Collection<SolveGroup> groups = new HashSet<>();
     @ManyToOne
     private SolveGroup defaultGroup;
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Cell> cells = new ArrayList<>();
     private Integer time;
     private Date date;
 
@@ -61,15 +59,6 @@ public class SolveData {
         this.defaultGroup = defaultGroup;
     }
 
-    public List<? extends Cell> getCells() {
-        return cells;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void setCells(List<? extends Cell> cells) {
-        this.cells = (List<Cell>) cells;
-    }
-
     public Integer getTime() {
         return time;
     }
@@ -88,31 +77,5 @@ public class SolveData {
 
     public String getTitle() {
         return puzzle.getTitle();
-    }
-
-    @Entity
-    public static class Cell {
-        @Id
-        @GeneratedValue
-        private Long id;
-        private Boolean blank;
-        private String guess;
-
-        public Boolean getBlank() {
-            return blank;
-        }
-
-        public void setBlank(Boolean blank) {
-            this.blank = blank;
-        }
-
-        public String getGuess() {
-            return guess;
-        }
-
-        public void setGuess(String guess) {
-            this.guess = guess;
-        }
-
     }
 }

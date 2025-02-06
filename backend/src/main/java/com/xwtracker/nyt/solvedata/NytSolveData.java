@@ -1,7 +1,9 @@
 package com.xwtracker.nyt.solvedata;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.xwtracker.solvedata.SolveData;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
 @Entity
@@ -9,6 +11,9 @@ import jakarta.persistence.Entity;
 public class NytSolveData extends SolveData {
     private Boolean eligible;
     private Boolean solved;
+    @JsonRawValue
+    @Column(columnDefinition = "TEXT")
+    private String cells;
 
     public Boolean getEligible() {
         return eligible;
@@ -26,16 +31,11 @@ public class NytSolveData extends SolveData {
         this.eligible = eligible;
     }
 
-    @Entity
-    public static class Cell extends SolveData.Cell {
-        private Integer timestamp;
+    public String getCells() {
+        return cells;
+    }
 
-        public Integer getTimestamp() {
-            return timestamp;
-        }
-
-        public void setTimestamp(Integer timestamp) {
-            this.timestamp = timestamp;
-        }
+    public void setCells(String cells) {
+        this.cells = cells;
     }
 }
