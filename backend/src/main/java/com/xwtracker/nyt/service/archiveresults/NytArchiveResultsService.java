@@ -32,7 +32,10 @@ public class NytArchiveResultsService {
         this.solveDataRepository = solveDataRepository;
     }
 
-    public List<CompletableFuture<NytSolveData>> fetchNytPuzzlesAndSolveData(NytArchiveResults archiveResults, PuzzleTrackerUser user) {
+    public List<CompletableFuture<NytSolveData>> fetchNytPuzzlesAndSolveData(
+        NytArchiveResults archiveResults,
+        PuzzleTrackerUser user
+    ) {
         return archiveResults.getResults().stream()
             .filter(NytArchiveEntry::isSolved)
             .map(archiveEntry -> archiveEntryService.updateNytPuzzleAndSolveData(archiveEntry, user))
@@ -40,10 +43,13 @@ public class NytArchiveResultsService {
     }
 
     @Transactional
-    public void updateNytPuzzlesAndSolveData(List<NytPuzzle> nytPuzzleList, List<NytSolveData> nytSolveDataList, String uid) {
+    public void updateNytPuzzlesAndSolveData(
+        List<NytPuzzle> nytPuzzleList,
+        List<NytSolveData> nytSolveDataList,
+        NytFetchAndUpdateJob job
+    ) {
         puzzleRepository.saveAll(nytPuzzleList);
         solveDataRepository.saveAll(nytSolveDataList);
-        NytFetchAndUpdateJob job = jobRepository.getReferenceById(uid);
         job.setPuzzlesFetched(job.getPuzzlesFetched() + nytSolveDataList.size());
         job.setBlocksRemaining(job.getBlocksRemaining() - 1);
         if (job.getBlocksRemaining() == 0) {

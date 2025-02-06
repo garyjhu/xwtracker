@@ -2,10 +2,13 @@ package com.xwtracker.nyt.service.fetchandupdate;
 
 import com.xwtracker.nyt.puzzle.NytPuzzle;
 import com.xwtracker.nyt.service.NytService;
+import com.xwtracker.nyt.service.archiveresults.NytArchiveResults;
 import com.xwtracker.nyt.service.archiveresults.NytArchiveResultsService;
 import com.xwtracker.nyt.solvedata.NytSolveData;
 import com.xwtracker.puzzle.PuzzleRepository;
 import com.xwtracker.puzzletrackeruser.PuzzleTrackerUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -15,16 +18,16 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Predicate;
 
 @Service
 public class NytFetchAndUpdateService {
     private final NytService nytService;
     private final NytArchiveResultsService archiveResultsService;
+    private final PuzzleRepository puzzleRepository;
+    private final Logger logger = LoggerFactory.getLogger(NytFetchAndUpdateService.class);
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private final LocalDate FIRST_NYT_PUBLISH_DATE = LocalDate.of(2022, 11, 21);
-    private final PuzzleRepository puzzleRepository;
+    private final LocalDate FIRST_NYT_PUBLISH_DATE = LocalDate.of(1993, 11, 21);
 
     public NytFetchAndUpdateService(
         NytService nytService,
@@ -54,33 +57,39 @@ public class NytFetchAndUpdateService {
         ) {
             LocalDate blockStart = blockEnd.minusDays(99);
             if (blockStart.isBefore(job.getDateStart())) blockStart = job.getDateStart();
-            fetchAndUpdateBlock(job.getPublishType(), blockStart.format(formatter), blockEnd.format(formatter), user);
+            fetchAndUpdateBlock(job, blockStart.format(formatter), blockEnd.format(formatter), user);
         }
     }
 
     public void fetchAndUpdateBlock(
-        String publishType,
+        NytFetchAndUpdateJob job,
         String dateStart,
         String dateEnd,
         PuzzleTrackerUser user
     ) {
-        nytService.fetchArchiveResults(publishType, dateStart, dateEnd, user.getCookie())
-            .thenApply(archiveResults -> archiveResultsService.fetchNytPuzzlesAndSolveData(archiveResults, user))
-            .thenAccept(futures -> CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
-                .whenComplete((unused, throwable) -> {
-                    List<NytSolveData> nytSolveDataList = futures.stream()
-                        .filter(future -> !future.isCompletedExceptionally())
-                        .map(CompletableFuture::join)
-                        .filter(Predicate.not(Objects::isNull))
-                        .toList();
-                    List<NytPuzzle> nytPuzzleList = nytSolveDataList.stream()
-                        .map(nytSolveData -> (NytPuzzle) nytSolveData.getPuzzle())
-                        .filter(nytPuzzle -> puzzleRepository.findByNytId(nytPuzzle.getNytId()) == null)
-                        .toList();
-                    archiveResultsService.updateNytPuzzlesAndSolveData(nytPuzzleList, nytSolveDataList, user.getUid());
+        try {
+            NytArchiveResults archiveResults = nytService.fetchArchiveResults(job.getPublishType(), dateStart, dateEnd, user.getCookie()).get();
+            List<CompletableFuture<NytSolveData>> futures = archiveResultsService.fetchNytPuzzlesAndSolveData(archiveResults, user);
+            List<NytSolveData> nytSolveDataList = futures.stream()
+                .map(future -> {
+                    try {
+                        return future.get();
+                    }
+                    catch (Exception e) {
+                        logger.error(e.getLocalizedMessage());
+                        return null;
+                    }
                 })
-                .join()
-            )
-            .join();
+                .filter(Objects::nonNull)
+                .toList();
+            List<NytPuzzle> nytPuzzleList = nytSolveDataList.stream()
+                .map(nytSolveData -> (NytPuzzle) nytSolveData.getPuzzle())
+                .filter(nytPuzzle -> puzzleRepository.findByNytId(nytPuzzle.getNytId()) == null)
+                .toList();
+            archiveResultsService.updateNytPuzzlesAndSolveData(nytPuzzleList, nytSolveDataList, job);
+        }
+        catch (Exception e) {
+            logger.error(e.getLocalizedMessage());
+        }
     }
 }
